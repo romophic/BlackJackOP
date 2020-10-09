@@ -12,3 +12,9 @@ $(EXE): $(MAIN) $(OBJ)
 
 $(OBJ): $(SRC)
 	$(CC) $(FLAG) -c $(SRC) -o $(OBJ)
+
+run:
+	$(EXE)
+
+clean:
+	rm -rf $(BUILDPATH)*
