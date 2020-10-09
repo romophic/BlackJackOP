@@ -18,19 +18,6 @@ int getArrayMinNum(const vector<int> &list) { //Returm most minimum num from arr
   return -1;
 }
 
-bool arrayUpdate(vector<int> &list) { //Update array and return false if can't(end)
-  list[list.size() - 1]++;
-
-  for (int i = list.size() - 1; i > 0; i--){
-    if (13 < list[i]) {
-      list[i] = getArrayMinNum(list);
-      list[i-1]++;
-    } else break;
-  }
-
-  return true;
-}
-
 bool isArrayCorrect(vector<int> &list) {
   vector<int> sums(list.size(), 0);
   for (int i : list)
@@ -39,6 +26,21 @@ bool isArrayCorrect(vector<int> &list) {
   for (int i : sums)
     if (4 < i)
       return false;
+
+  return true;
+}
+
+bool arrayUpdate(vector<int> &list) { //Update array and return false if can't(end)
+  do {
+    list[list.size() - 1]++;
+  }while (!isArrayCorrect(list));
+
+  for (int i = list.size() - 1; i > 0; i--){
+    if (13 < list[i]) {
+      list[i] = getArrayMinNum(list);
+      list[i-1]++;
+    } else break;
+  }
 
   return true;
 }
