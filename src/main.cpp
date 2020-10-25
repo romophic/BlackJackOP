@@ -3,9 +3,13 @@
 #include <pthread.h>
 #include <string>
 #include <vector>
+#include <random>
 using namespace std;
 
 #define DEBUG
+
+std::mt19937 mt{ std::random_device{}() };
+std::uniform_int_distribution<int> dist(1, 13);
 
 void putArrayNums(vector<int> &_list, string _str) { // put array
 #ifdef DEBUG
@@ -25,7 +29,7 @@ int getMiniNum(vector<int> &_sum, int _num) { // numを超える最小の設置�
   return 14;
 }
 
-bool isArrayCorrect(vector<int> &_list) {
+bool isArrayCorrect(vector<int> &_list) { // check array
   vector<int> sums(_list.size(), 0);
   for (int i : _list) {
     if (!(0 <= i and i <= 13))
@@ -65,19 +69,30 @@ bool arrayUpdate(vector<int> &_list) { // Update array and return false
   return true;
 }
 
+void arrayFillRandom(vector<int> &_list) { // fill array random num (1 ~ 13)
+  vector<int> cnt(13,0);
+  for (int i = 0; i < _list.size();) {
+    int num=dist(mt);
+    if (cnt[num - 1] < 4) {
+      cnt[num - 1]++;
+      _list[i]=num;
+      i++;
+    }
+  }
+}
+
+enum GAMESTATUS { WIN = 0, LOSE = 1 };
+
+int game(const vector<int> &_list) {
+  vector<int> me,dealer;
+}
+
 int main(void) {
   vector<int> list = {1, 1, 1, 1, 2, 2, 2, 2,
                       3, 3, 3, 3, 4, 4, 4}; // Initialcards
-  for (int64_t i = 0;; i++) {
-    if (i % 1000 == 0)
-      putArrayNums(list, to_string(i) + ": ");
-    arrayUpdate(list);
-    if (isArrayCorrect(list)) {
 
-    } else {
-      cout << "ERR\n";
-      return 0;
-    }
+  while(true){
+    arrayFillRandom(list);
+    game(list);
   }
-  cout << "complete\n";
 }
