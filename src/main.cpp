@@ -7,19 +7,19 @@ using namespace std;
 
 #define DEBUG
 
-void putArrayNums(vector<int> &_list,string _str) { //put array
+void putArrayNums(vector<int> &_list, string _str) { // put array
 #ifdef DEBUG
-  cout<<_str<<": ";
+  cout << _str << ": ";
   for (int i : _list)
     cout << i << " ";
   cout << "\n";
 #endif
 }
 
-int getMiniNum(vector<int> &_sum,int _num) {//numを超える最小の設置できる値
+int getMiniNum(vector<int> &_sum, int _num) { // numを超える最小の設置できる値
   for (int i = _num; i < _sum.size(); i++) {
     if (_sum[i] < 4) {
-      return i+1;
+      return i + 1;
     }
   }
   return 14;
@@ -43,22 +43,22 @@ bool isArrayCorrect(vector<int> &_list) {
 bool arrayUpdate(vector<int> &_list) { // Update array and return false
                                        // ifcan't(end) _list[_list.size()-1]++;
   vector<int> sums(13, 0);
-  for (int i:_list) // kuriagari
+  for (int i : _list) // kuriagari
     sums[i - 1]++;
 
-  sums[_list[_list.size()-1]-1]--;
-  _list[_list.size()-1]=getMiniNum(sums,_list[_list.size()-1]);
-  sums[_list[_list.size()-1]-1]++;
+  sums[_list[_list.size() - 1] - 1]--;
+  _list[_list.size() - 1] = getMiniNum(sums, _list[_list.size() - 1]);
+  sums[_list[_list.size() - 1] - 1]++;
 
   for (int i = _list.size() - 1; i > 0; i--) { // kuriagari
     if (14 <= _list[i]) {
-      sums[_list[i]-1]--;
-      _list[i]=getMiniNum(sums,0);
-      sums[_list[i]-1]++;
+      sums[_list[i] - 1]--;
+      _list[i] = getMiniNum(sums, 0);
+      sums[_list[i] - 1]++;
 
-      sums[_list[i]-1]--;
-      _list[i-1]=getMiniNum(sums,_list[i-1]);
-      sums[_list[i]-1]++;
+      sums[_list[i] - 1]--;
+      _list[i - 1] = getMiniNum(sums, _list[i - 1]);
+      sums[_list[i] - 1]++;
     }
   }
 
@@ -69,8 +69,8 @@ int main(void) {
   vector<int> list = {1, 1, 1, 1, 2, 2, 2, 2,
                       3, 3, 3, 3, 4, 4, 4}; // Initialcards
   for (int64_t i = 0;; i++) {
-    if(i % 1000 == 0)
-      putArrayNums(list, to_string(i)+": ");
+    if (i % 1000 == 0)
+      putArrayNums(list, to_string(i) + ": ");
     arrayUpdate(list);
     if (isArrayCorrect(list)) {
 
@@ -79,5 +79,5 @@ int main(void) {
       return 0;
     }
   }
-  cout<<"complete\n";
+  cout << "complete\n";
 }
