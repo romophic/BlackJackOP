@@ -14,6 +14,7 @@ $(OBJ): $(SRC)
 	$(CC) $(FLAG) -c $(SRC) -o $(OBJ)
 
 run:
+	make
 	$(EXE)
 
 clean:
