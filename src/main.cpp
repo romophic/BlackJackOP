@@ -65,6 +65,7 @@ bool arrayUpdate(vector<int> &_list) { // Update array and return false
 }
 */
 
+//generate random num
 std::mt19937 mt{std::random_device{}()};
 std::uniform_int_distribution<int> dist(1, 13);
 
@@ -87,19 +88,19 @@ void arrayFillRandom(vector<int> &_list) { // fill array random num (1 ~ 13)
   }
 }
 
-namespace status{
-  enum GAMESTATUS {
+namespace status{ //game status
+  enum GAMESTATUS { //game results
     WIN   = 0,
     LOSE  = 1,
     ERROR = -1
   };
-  enum CARDSTATUS{
+  enum CARDSTATUS{ //card tyoes
     HIT = 0,
     STAND = 1,
     DOUBLEDOWN = 2,
     SALENDER = 3
   };
-  constexpr int charts[10][10] = {
+  constexpr int chart_first[10][10] = { //first chart
     {0,0,0,0,0,0,0,0,0,0},
     {0,2,2,2,2,0,0,0,0,0},
     {2,2,2,2,2,2,2,2,0,0},
@@ -113,7 +114,7 @@ namespace status{
   };
 }
 
-int getChooseCard(int _me_sum,int _dealer_opened_card){
+int getChooseCardFromFirst(int _me_sum,int _dealer_opened_card){ //Choose card from chart_first
   //EDUCATION to me_sum
   if (_me_sum <= 8)
     _me_sum=8;
@@ -126,14 +127,13 @@ int getChooseCard(int _me_sum,int _dealer_opened_card){
   if (10 <= _dealer_opened_card)
     _dealer_opened_card = 10;
 
-  return status::charts[_me_sum-8][_dealer_opened_card-2];
+  return status::chart_first[_me_sum-8][_dealer_opened_card-2];
 }
 
 int game(const vector<int> &_list) { //code of kernel
-  int cardpos=0;
-  int me_sum=0;
-  int dealer_sum=0;
-  vector<int> me, dealer;
+  int cardpos=0; //point of _list[]
+  int me_sum=0,dealer_sum=0; // both player's sum
+  vector<int> me, dealer; // Both hand
 
   //first hit time x2
   me.push_back(_list[cardpos]);cardpos++;
@@ -145,12 +145,12 @@ int game(const vector<int> &_list) { //code of kernel
   dealer_sum+=dealer[0]+dealer[1];
 
   if(me[0] == me[1]){
-    ;//いわゆるスプリット return SPRIT;
+    ;//return SPRIT? TODO:;
   }
 
-  //Meが引く。オープンカードはdealer.at(0)
+  //Open card is dealer[0]
   while (true) {
-    int meshouldcard=getChooseCard(me_sum,dealer[0]);
+    int meshouldcard=getChooseCardFromFirst(me_sum,dealer[0]);
     cerr<<"meshould: "<<meshouldcard<<"\n";
     switch (meshouldcard) {
       case status::HIT:
@@ -178,7 +178,7 @@ int game(const vector<int> &_list) { //code of kernel
   }
 END: // game of end
 
-  //ディーラーが( < 17)まで引くやつ
+  //dealer take card while ($sum < 17)
   while(true){
     dealer.push_back(_list[cardpos]);cardpos++;
     dealer_sum+=dealer[dealer.size()-1];
@@ -186,6 +186,15 @@ END: // game of end
     if(16 < dealer_sum)
       break;
   }
+
+  //put hands
+  cout<<"Results:\n  Me:\n    ";
+  for(int i:me)
+    cout<<i<<" ";
+  cout<<"\n  Dealer:\n    ";
+  for(int i:dealer)
+    cout<<i<<" ";
+  cout<<"\n";
 
   return status::ERROR;
 }
