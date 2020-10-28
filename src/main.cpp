@@ -141,34 +141,36 @@ int game(const vector<int> &_list) { //code of kernel
     ;//いわゆるスプリット return SPRIT;
   }
 
+  //Meが引く。オープンカードはdealer.at(0)
+  while (true) {
+    int meshouldcard=getChooseCard(me_sum,dealer[0]);
+    cerr<<"meshould: "<<meshouldcard<<"\n";
+    switch (meshouldcard) {
+      case status::HIT:
+        me.push_back(_list[cardpos]);cardpos++;
+        cerr<<"Hit: "<<_list[_list.size()-1]<<"\n";
+        break;
+      case status::STAND:
+        goto END;
+        break;
+      case status::DOUBLEDOWN:
+        ;//idk TODO:
+        break;
+      case status::SALENDER:
+        ;//idk TODO:
+        break;
+    }
+  }
+END: // game of end
+
   //ディーラーが<17まで引くやつ
   while(true){
     dealer.push_back(_list[cardpos]);cardpos++;
-    dealer_sum+=dealer[cardpos-1];
+    dealer_sum+=dealer[dealer.size()-1];
 
     if(16 < dealer_sum)
       break;
   }
-
-  //Meが引く。オープンカードはdealer.at(0)
-  while (true) {
-    int meshouldcard=getChooseCard(me_sum,dealer[0]);
-    switch (meshouldcard) {
-      case status::HIT: {
-        me.push_back(_list[cardpos]);cardpos++;
-      }
-      case status::STAND: {
-        goto END;
-      }
-      case status::DOUBLEDOWN: {
-        ;//idk TODO:
-      }
-      case status::SALENDER: {
-        ;//idk TODO:
-      }
-    }
-  }
-END: // game of end
 
   return status::ERROR;
 }
@@ -176,4 +178,5 @@ END: // game of end
 int main(void) {
   vector<int> list = {1, 1, 1, 1, 2, 2, 2, 2,
                       3, 3, 3, 3, 4, 4, 4}; // Initialcards
+  game(list);
 }
