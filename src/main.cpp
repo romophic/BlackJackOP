@@ -114,8 +114,8 @@ namespace status{ //game status
   };
 }
 
-int getChooseCardFromFirst(int _me_sum,int _dealer_opened_card){ //Choose card from chart_first
-  //EDUCATION to me_sum
+int getChooseCardFromFirst(int _me_sum, int _dealer_opened_card) { // Choose card from chart_first
+  // EDUCATION to me_sum
   if (_me_sum <= 8)
     _me_sum=8;
   if (17 <= _me_sum)
@@ -130,71 +130,69 @@ int getChooseCardFromFirst(int _me_sum,int _dealer_opened_card){ //Choose card f
   return status::chart_first[_me_sum-8][_dealer_opened_card-2];
 }
 
-int game(const vector<int> &_list) { //code of kernel
-  int cardpos=0; //point of _list[]
-  int me_sum=0,dealer_sum=0; // both player's sum
-  vector<int> me, dealer; // Both hand
+int game(const vector<int> &_list) { // code of kernel
+  int cardpos = 0;                   // point of _list[]
+  int me_sum = 0, dealer_sum = 0;    // both player's sum
+  vector<int> me, dealer;            // Both hand
 
-  //first hit time x2
+  // first hit time x2
   me.push_back(_list[cardpos]);cardpos++;
   me.push_back(_list[cardpos]);cardpos++;
-  me_sum+=me[0]+me[1];
+  me_sum += me[0] + me[1];
 
   dealer.push_back(_list[cardpos]);cardpos++;
   dealer.push_back(_list[cardpos]);cardpos++;
-  dealer_sum+=dealer[0]+dealer[1];
+  dealer_sum += dealer[0] + dealer[1];
 
   if(me[0] == me[1]){
-    ;//return SPRIT? TODO:;
+    ; // return SPRIT? TODO:;
   }
 
-  //Open card is dealer[0]
+  // Open card is dealer[0]
   while (true) {
-    int meshouldcard=getChooseCardFromFirst(me_sum,dealer[0]);
-    cerr<<"meshould: "<<meshouldcard<<"\n";
+    int meshouldcard = getChooseCardFromFirst(me_sum, dealer[0]);
+    cerr << "meshould: " << meshouldcard << "\n";
     switch (meshouldcard) {
       case status::HIT:
         me.push_back(_list[cardpos]);cardpos++;
-        me_sum+=_list[_list.size()-1];
-        cerr<<"Hit: "<<me[me.size()-1]<<"\n";
+        me_sum += _list[_list.size() - 1];
+        cerr << "Hit: " << me[me.size() - 1] << "\n";
         break;
 
       case status::STAND:
         goto END;
         break;
 
-      case status::DOUBLEDOWN:
-        ;//idk TODO:
+      case status::DOUBLEDOWN:; // idk TODO:
         break;
 
-      case status::SALENDER:
-        ;//idk TODO:
+      case status::SALENDER:; // idk TODO:
         break;
 
       default:
-        cout<<"something error\n";
+        cout << "something error\n";
         break;
     }
   }
 END: // game of end
 
-  //dealer take card while ($sum < 17)
+  // dealer take card while ($sum < 17)
   while(true){
     dealer.push_back(_list[cardpos]);cardpos++;
-    dealer_sum+=dealer[dealer.size()-1];
+    dealer_sum += dealer[dealer.size() - 1];
 
     if(16 < dealer_sum)
       break;
   }
 
-  //put hands
-  cout<<"Results:\n  Me:\n    ";
-  for(int i:me)
-    cout<<i<<" ";
-  cout<<"\n  Dealer:\n    ";
-  for(int i:dealer)
-    cout<<i<<" ";
-  cout<<"\n";
+  // put hands
+  cout << "Results:\n  Me:\n    ";
+  for (int i : me)
+    cout << i << " ";
+  cout << "\n  Dealer:\n    ";
+  for (int i : dealer)
+    cout << i << " ";
+  cout << "\n";
 
   return status::ERROR;
 }
