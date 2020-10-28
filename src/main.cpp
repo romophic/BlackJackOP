@@ -1,3 +1,10 @@
+//   ____  _            _       _            _     ___  ____   //
+//  | __ )| | __ _  ___| | __  | | __ _  ___| | __/ _ \|  _ \  //
+//  |  _ \| |/ _` |/ __| |/ /  | |/ _` |/ __| |/ / | | | |_) | //
+//  | |_) | | (_| | (__|   < |_| | (_| | (__|   <| |_| |  __/  //
+//  |____/|_|\__,_|\___|_|\_\___/ \__,_|\___|_|\_\\___/|_|     //
+//                      Made by NULLCT                         //
+
 #include <cstdint>
 #include <ctime>
 #include <iostream>
@@ -148,22 +155,30 @@ int game(const vector<int> &_list) { //code of kernel
     switch (meshouldcard) {
       case status::HIT:
         me.push_back(_list[cardpos]);cardpos++;
-        cerr<<"Hit: "<<_list[_list.size()-1]<<"\n";
+        me_sum+=_list[_list.size()-1];
+        cerr<<"Hit: "<<me[me.size()-1]<<"\n";
         break;
+
       case status::STAND:
         goto END;
         break;
+
       case status::DOUBLEDOWN:
         ;//idk TODO:
         break;
+
       case status::SALENDER:
         ;//idk TODO:
+        break;
+
+      default:
+        cout<<"something error\n";
         break;
     }
   }
 END: // game of end
 
-  //ディーラーが<17まで引くやつ
+  //ディーラーが( < 17)まで引くやつ
   while(true){
     dealer.push_back(_list[cardpos]);cardpos++;
     dealer_sum+=dealer[dealer.size()-1];
@@ -176,7 +191,6 @@ END: // game of end
 }
 
 int main(void) {
-  vector<int> list = {1, 1, 1, 1, 2, 2, 2, 2,
-                      3, 3, 3, 3, 4, 4, 4}; // Initialcards
+  vector<int> list = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4}; // Initialcards
   game(list);
 }
