@@ -153,7 +153,7 @@ int getChooseCardFromFirst(int _me_sum, int _dealer_opened_card) { // Choose car
 
   return status::chart_first[_me_sum-8][_dealer_opened_card-2];
 } // done!
-int getChooseCardFromAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_plusa
+int getChooseCardFromFirstAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_plusa
   // EDUCATION to me_sum
   if (_me_sum <= 2)
     _me_sum=8;
@@ -181,8 +181,23 @@ int getChooseCardFromSecond(int _me_sum, int _dealer_opened_card) { // Choose ca
   if (10 <= _dealer_opened_card)
     _dealer_opened_card = 10;
 
-  return status::chart_first[_me_sum-8][_dealer_opened_card-2];
-}
+  return status::chart_first[_me_sum-11][_dealer_opened_card-2];
+}//done!
+int getChooseCardFromSecondAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
+  // EDUCATION to me_sum
+  if (_me_sum <= 7)
+    _me_sum=7;
+  if (9 <= _me_sum)
+    _me_sum=9;
+
+  //Too
+  if (_dealer_opened_card == 1)
+    _dealer_opened_card = 11;
+  if (10 <= _dealer_opened_card)
+    _dealer_opened_card = 10;
+
+  return status::chart_first[_me_sum-7][_dealer_opened_card-2];
+}//done!
 
 int game(const vector<int> &_list) { // code of kernel
   int cardpos = 0;                   // point of _list[]
