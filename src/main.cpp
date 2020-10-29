@@ -112,7 +112,7 @@ namespace status{ //game status
     {1,1,1,1,1,0,0,3,3,3},
     {1,1,1,1,1,1,1,1,1,1}
   };
-  constexpr int char_plusa[8][10] = {
+  constexpr int chart_plusa[8][10] = { //if include ace
     {0,0,0,2,2,0,0,0,0,0},
     {0,0,0,2,2,0,0,0,0,0},
     {0,0,0,2,2,0,0,0,0,0},
@@ -122,27 +122,56 @@ namespace status{ //game status
     {1,2,2,2,2,1,1,0,0,0},
     {1,1,1,1,1,1,1,1,1,1}
   };
-  constexpr int second[10][10] = {
+  constexpr int chart_second[7][10] = { // in second time
     {0,0,0,0,0,0,0,0,0,0},
     {0,0,1,1,1,0,0,0,0,0},
     {1,1,1,1,1,0,0,0,0,0},
     {1,1,1,1,1,0,0,0,0,0},
     {1,1,1,1,1,0,0,0,0,0},
     {1,1,1,1,1,0,0,0,0,0},
-    {1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1}
+  };
+  constexpr int chart_seconda[3][10] = { // in secon if include ace
     {0,0,0,0,0,0,0,0,0,0},
     {1,1,1,1,1,1,1,0,0,0},
     {1,1,1,1,1,1,1,1,1,1}
   };
-  //TODO: A+1~
-
-
 }
 
 int getChooseCardFromFirst(int _me_sum, int _dealer_opened_card) { // Choose card from chart_first
   // EDUCATION to me_sum
   if (_me_sum <= 8)
     _me_sum=8;
+  if (17 <= _me_sum)
+    _me_sum=17;
+
+  //Too
+  if (_dealer_opened_card == 1)
+    _dealer_opened_card = 11;
+  if (10 <= _dealer_opened_card)
+    _dealer_opened_card = 10;
+
+  return status::chart_first[_me_sum-8][_dealer_opened_card-2];
+} // done!
+int getChooseCardFromAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_plusa
+  // EDUCATION to me_sum
+  if (_me_sum <= 2)
+    _me_sum=8;
+  if (9 <= _me_sum)
+    _me_sum=9;
+
+  //Too
+  if (_dealer_opened_card == 1)
+    _dealer_opened_card = 11;
+  if (10 <= _dealer_opened_card)
+    _dealer_opened_card = 10;
+
+  return status::chart_first[_me_sum-2][_dealer_opened_card-2];
+} // done!
+int getChooseCardFromSecond(int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
+  // EDUCATION to me_sum
+  if (_me_sum <= 11)
+    _me_sum=11;
   if (17 <= _me_sum)
     _me_sum=17;
 
