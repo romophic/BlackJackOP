@@ -112,6 +112,31 @@ namespace status{ //game status
     {1,1,1,1,1,0,0,3,3,3},
     {1,1,1,1,1,1,1,1,1,1}
   };
+  constexpr int char_plusa[8][10] = {
+    {0,0,0,2,2,0,0,0,0,0},
+    {0,0,0,2,2,0,0,0,0,0},
+    {0,0,0,2,2,0,0,0,0,0},
+    {0,0,2,2,2,0,0,0,0,0},
+    {0,0,2,2,2,0,0,0,0,0},
+    {0,2,2,2,2,0,0,0,0,0},
+    {1,2,2,2,2,1,1,0,0,0},
+    {1,1,1,1,1,1,1,1,1,1}
+  };
+  constexpr int second[10][10] = {
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,1,1,1,0,0,0,0,0},
+    {1,1,1,1,1,0,0,0,0,0},
+    {1,1,1,1,1,0,0,0,0,0},
+    {1,1,1,1,1,0,0,0,0,0},
+    {1,1,1,1,1,0,0,0,0,0},
+    {1,1,1,1,1,1,1,1,1,1},
+    {0,0,0,0,0,0,0,0,0,0},
+    {1,1,1,1,1,1,1,0,0,0},
+    {1,1,1,1,1,1,1,1,1,1}
+  };
+  //TODO: A+1~
+
+
 }
 
 int getChooseCardFromFirst(int _me_sum, int _dealer_opened_card) { // Choose card from chart_first
@@ -134,19 +159,20 @@ int game(const vector<int> &_list) { // code of kernel
   int cardpos = 0;                   // point of _list[]
   int me_sum = 0, dealer_sum = 0;    // both player's sum
   vector<int> me, dealer;            // Both hand
+  bool atr=false;                    // Ace trigger
 
   // first hit time x2
   me.push_back(_list[cardpos]);cardpos++;
   me.push_back(_list[cardpos]);cardpos++;
   me_sum += me[0] + me[1];
+  if(me[0] == 0 or me[1] == 0)
+    atr=true;
 
   dealer.push_back(_list[cardpos]);cardpos++;
   dealer.push_back(_list[cardpos]);cardpos++;
   dealer_sum += dealer[0] + dealer[1];
-
-  if(me[0] == me[1]){
-    ; // return SPRIT? TODO:;
-  }
+  if(dealer[0] == 0 or dealer[1] == 0)
+    atr=true;
 
   // Open card is dealer[0]
   while (true) {
