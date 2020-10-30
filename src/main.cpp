@@ -5,6 +5,7 @@
 //  |____/|_|\__,_|\___|_|\_\___/ \__,_|\___|_|\_\\___/|_|     //
 //                      Made by NULLCT                         //
 
+#include <condition_variable>
 #include <cstdint>
 #include <ctime>
 #include <iostream>
@@ -92,6 +93,7 @@ namespace status{ //game status
   enum GAMESTATUS { //game results
     WIN   = 0,
     LOSE  = 1,
+    DRAW = 2,
     ERROR = -1
   };
   enum CARDSTATUS{ //card tyoes
@@ -156,7 +158,7 @@ int getChooseCardFromFirst(int _me_sum, int _dealer_opened_card) { // Choose car
 int getChooseCardFromFirstAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_plusa
   // EDUCATION to me_sum
   if (_me_sum <= 2)
-    _me_sum=8;
+    _me_sum=2;
   if (9 <= _me_sum)
     _me_sum=9;
 
@@ -204,28 +206,50 @@ int game(const vector<int> &_list) { // code of kernel
   int me_sum = 0, dealer_sum = 0;    // both player's sum
   vector<int> me, dealer;            // Both hand
   bool atr=false;                    // Ace trigger
+  bool firsttr=true;
 
   // first hit time x2
   me.push_back(_list[cardpos]);cardpos++;
   me.push_back(_list[cardpos]);cardpos++;
   me_sum += me[0] + me[1];
-  if(me[0] == 0 or me[1] == 0)
+  if(me[0] == 1 or me[1] == 1)
     atr=true;
 
   dealer.push_back(_list[cardpos]);cardpos++;
   dealer.push_back(_list[cardpos]);cardpos++;
   dealer_sum += dealer[0] + dealer[1];
-  if(dealer[0] == 0 or dealer[1] == 0)
-    atr=true;
 
+  if (dealer_sum == 21) { // BlackJack!!
+    cout<<"BlackJack\n";
+    return 0;
+  }
+
+  int meshouldcard = 0;
   // Open card is dealer[0]
   while (true) {
-    int meshouldcard = getChooseCardFromFirst(me_sum, dealer[0]);
-    cerr << "meshould: " << meshouldcard << "\n";
+    for (int i : me) // put arrays
+      cout << i << " ";
+    cout<<"\n";
+
+    if (firsttr) {
+      firsttr = false;
+      if(atr)
+        meshouldcard = getChooseCardFromFirstAce(me_sum,dealer[0]);
+      else
+        meshouldcard = getChooseCardFromFirst(me_sum, dealer[0]);
+    } else {
+      if(atr)
+        meshouldcard = getChooseCardFromSecondAce(me_sum,dealer[0]);
+      else
+        meshouldcard = getChooseCardFromSecond(me_sum, dealer[0]);
+    }
+
     switch (meshouldcard) {
       case status::HIT:
         me.push_back(_list[cardpos]);cardpos++;
         me_sum += _list[_list.size() - 1];
+        if (me[me.size() - 1] == 1)
+          atr=true;
         cerr << "Hit: " << me[me.size() - 1] << "\n";
         break;
 
@@ -234,14 +258,21 @@ int game(const vector<int> &_list) { // code of kernel
         break;
 
       case status::DOUBLEDOWN:; // idk TODO:
-        break;
+        cout<<"DOUBLEDOWN\n";
+        me.push_back(_list[cardpos]);cardpos++;
+        me_sum += _list[_list.size() - 1];
+        if (me[me.size() - 1] == 1)
+          atr=true;
+        cerr << "Hit: " << me[me.size() - 1] << "\n";
+        goto END;
 
       case status::SALENDER:; // idk TODO:
-        break;
+        cout<<"DOUBLEDOWN\n";
+        goto END;
 
       default:
         cout << "something error\n";
-        break;
+        goto END;
     }
   }
 END: // game of end
@@ -264,10 +295,33 @@ END: // game of end
     cout << i << " ";
   cout << "\n";
 
+  if(atr and me_sum+10 <= 21)
+    me_sum+=10;
+
+  if (me_sum < dealer_sum) {
+    return status::LOSE;
+  } else if (me_sum > dealer_sum) {
+    return status::WIN;
+  } else {
+    return status::DRAW;
+  }
+
   return status::ERROR;
 }
 
 int main(void) {
-  vector<int> list = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4}; // Initialcards
-  game(list);
+  vector<int> list = {1, 7, 2, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5}; // Initialcards
+  switch (game(list)) {
+  case status::WIN:
+    cout<<"WIN\n";
+    break;
+
+  case status::LOSE:
+    cout<<"LOSE\n";
+    break;
+
+  case status::DRAW:
+    cout<<"DRAW\n";
+    break;
+  }
 }
