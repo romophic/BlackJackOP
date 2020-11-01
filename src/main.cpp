@@ -89,6 +89,12 @@ void arrayFillRandom(vector<int> &_list) { // fill array random num (1 ~ 13)
   }
 }
 
+void fixArray(vector<int> &_list) {
+  for (int &i : _list)
+    if (10 <= i)
+      i=10;
+}
+
 namespace status{ //game status
   enum GAMESTATUS { //game results
     WIN   = 0,
@@ -232,17 +238,26 @@ int game(const vector<int> &_list) { // code of kernel
     cout<<"\n";
 
     if (firsttr) {
+      cout<<"First:";
       firsttr = false;
-      if(atr)
+      if(atr){
+        cout<<"atr";
         meshouldcard = getChooseCardFromFirstAce(me_sum,dealer[0]);
-      else
+      }
+      else{
         meshouldcard = getChooseCardFromFirst(me_sum, dealer[0]);
+      }
     } else {
-      if(atr)
+      cout<<"Second:";
+      if(atr){
+        cout<<"atr";
         meshouldcard = getChooseCardFromSecondAce(me_sum,dealer[0]);
-      else
+      }
+      else{
         meshouldcard = getChooseCardFromSecond(me_sum, dealer[0]);
+      }
     }
+    cout<<"\n";
 
     switch (meshouldcard) {
       case status::HIT:
@@ -254,6 +269,7 @@ int game(const vector<int> &_list) { // code of kernel
         break;
 
       case status::STAND:
+        cout<<"STAND\n";
         goto END;
         break;
 
@@ -267,7 +283,7 @@ int game(const vector<int> &_list) { // code of kernel
         goto END;
 
       case status::SALENDER:; // idk TODO:
-        cout<<"DOUBLEDOWN\n";
+        cout<<"SALENDER\n";
         goto END;
 
       default:
@@ -286,17 +302,26 @@ END: // game of end
       break;
   }
 
+  if(atr and me_sum+10 <= 21)
+    me_sum+=10;
+
   // put hands
-  cout << "Results:\n  Me:\n    ";
+  cout << "LastResultssssssssssssss:\n  Me:"<<me_sum<<"\n    ";
   for (int i : me)
     cout << i << " ";
-  cout << "\n  Dealer:\n    ";
+  cout << "\n  Dealer:"<<dealer_sum<<"\n    ";
   for (int i : dealer)
     cout << i << " ";
   cout << "\n";
 
-  if(atr and me_sum+10 <= 21)
-    me_sum+=10;
+  //Over 21
+  if(21 < me_sum){
+    if(21 < dealer_sum)
+      return status::DRAW;
+    return status::WIN;
+  }
+  if(21 < dealer_sum)
+    return status::LOSE;
 
   if (me_sum < dealer_sum) {
     return status::LOSE;
@@ -311,6 +336,12 @@ END: // game of end
 
 int main(void) {
   vector<int> list = {1, 7, 2, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5}; // Initialcards
+  arrayFillRandom(list);
+  fixArray(list);
+  cout<<"ararys: \n";
+  for (int i : list)
+    cout<<i<<" ";
+  cout<<"\n";
   switch (game(list)) {
   case status::WIN:
     cout<<"WIN\n";
