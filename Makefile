@@ -1,7 +1,7 @@
 SRCPATH=src/
 BUILDPATH=build/
 CC=clang++
-FLAG=-std=c++17 -O3 -g
+FLAG=-std=c++17 -O3 -g -pthread
 MAIN=$(SRCPATH)main.cpp
 EXE=$(BUILDPATH)main
 
