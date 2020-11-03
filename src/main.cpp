@@ -286,61 +286,69 @@ END: // end of game
 }
 
 vector<int> result(7,0);
-mutex mtx;
+mutex mtx_result;
+mutex mtx_persent;
 
-void threadGaming(int _magnification) {
+void threadGaming(int _n,int _threadnum) {
   vector<int> list(15,0); // Initialcards
-  for(int i=0;i<_magnification;i++){
+  int persent=0;
+  for(int i=0;i<_n;i++){
+    if(persent != int(double(i)/_n*100)){
+      persent = int(double(i)/_n*100);
+      mtx_persent.lock();
+      cout<<_threadnum<<":"<<persent<<"%"<<endl;
+      mtx_persent.unlock();
+    }
     arrayFillRandom(list);
     fixArray(list);
 
     switch (game(list)) {
     case gamestatus::WIN:
-      mtx.lock();
+      mtx_result.lock();
       result[0]++;
-      mtx.unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::LOSE:
-      mtx.lock();
+      mtx_result.lock();
       result[1]++;
-      mtx.unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::DRAW:
-      mtx.lock();
+      mtx_result.lock();
       result[2]++;
-      mtx.unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::DOUBLEDOWNTOWIN:
-      mtx.lock();
+      mtx_result.lock();
       result[3]++;
-      mtx.unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::DOUBLEDOWNTOLOSE:
-      mtx.lock();
+      mtx_result.lock();
       result[4]++;
-      mtx.unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::DOUBLEDOWNTODRAW:
-      mtx.lock();
+      mtx_result.lock();
       result[5]++;
-      mtx.unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::ERROR:
-      mtx.lock();
+      mtx_result.lock();
       result[6]++;
-      mtx.unlock();
+      mtx_result.unlock();
       break;
 
     default:
-      mtx.lock();
+      mtx_result.lock();
       result[6]++;
-      mtx.unlock();
+      mtx_result.unlock();
       break;
     }
   }
@@ -363,7 +371,7 @@ int main(void) {
 
   cout<<"Making threads...\n";
   for (int i=0;i<threadnum;i++){
-    threads.emplace_back(thread(threadGaming,n));
+    threads.emplace_back(thread(threadGaming,n,i));
     cout<<i+1<<"/"<<threadnum<<"\n";
   }
   cout<<"done!\n";
