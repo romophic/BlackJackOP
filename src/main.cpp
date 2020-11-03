@@ -43,7 +43,7 @@ void arrayFillRandom(vector<int> &_list) { // fill array random num (1 ~ 13)
 void fixArray(vector<int> &_list) {
   for (int &i : _list)
     if (10 <= i)
-      i=10;
+      i = 10;
 }
 
 namespace gamestatus{
@@ -51,8 +51,10 @@ namespace gamestatus{
     WIN   = 0,
     LOSE  = 1,
     DRAW = 2,
-    DOUBLEDOWN = 3,
-    SALENDER = 4,
+    DOUBLEDOWNTOWIN = 3,
+    DOUBLEDOWNTOLOSE = 4,
+    DOUBLEDOWNTODRAW = 5,
+    SALENDER = 5,
     ERROR = -1
   };
 }
@@ -183,8 +185,6 @@ int isWinLoseDraw(int &me_sum, int &dealer_sum) {
 }
 
 int game(const vector<int> &_list) { // code of kernel
-  putArrayNums(_list,"list");
-
   int cardpos = 0;                   // point of _list[]
   int me_sum = 0, dealer_sum = 0;    // both player's sum
   bool atr=false;                    // Ace trigger
@@ -211,8 +211,8 @@ int game(const vector<int> &_list) { // code of kernel
 
   while (true) {  // Open card is dealer[0]
     if (_list.size() - 1 < cardpos) {
-      cerr<<"OverFlow\n";
-      goto END;
+      cout<<"OverFlow\n";
+      return gamestatus::ERROR;
     }
 
     if (firsttr) {
@@ -238,35 +238,38 @@ int game(const vector<int> &_list) { // code of kernel
         me_sum += me[me.size() - 1];
         if (me[me.size() - 1] == 1)
           atr=true;
-        cerr << "Hit: " << me[me.size() - 1] << "\n";
 
         if (21 <= me_sum)
           goto END;
         break;
 
       case cardstatus::STAND:
-        cout<<"STAND\n";
         goto END;
         break;
 
       case cardstatus::DOUBLEDOWN: // idk TODO:
-        cout<<"DOUBLEDOWN\n";
         me.push_back(_list[cardpos]);cardpos++;
         me_sum += me[me.size() - 1];
-        if (me[me.size() - 1] == 1)
-          atr=true;
-        goto END;
+
+        switch (isWinLoseDraw(me_sum, dealer_sum)) {
+        case gamestatus::WIN:
+          return gamestatus::DOUBLEDOWNTOWIN;
+        case gamestatus::LOSE:
+          return gamestatus::DOUBLEDOWNTOLOSE;
+        case gamestatus::DRAW:
+          return gamestatus::DOUBLEDOWNTODRAW;
+        default:
+          return gamestatus::ERROR;
+        }
 
       case cardstatus::SALENDER:; // idk TODO:
-        cout<<"SALENDER\n";
-        goto END;
+        return gamestatus::SALENDER;
 
       default:
-        cout << "something error\n";
-        goto END;
+        return gamestatus::ERROR;
     }
   }
-END: // game of end
+END: // end of game
 
   // dealer take card while ($sum < 17)
   while(dealer_sum < 17){
@@ -277,42 +280,15 @@ END: // game of end
   if(atr and me_sum+10 <= 21)
     me_sum+=10;
 
-  // put hands
-  cout << "LastResultssssssssssssss:\n  Me:"<<me_sum<<"\n    ";
-  for (int i : me)
-    cout << i << " ";
-  cout << "\n  Dealer:"<<dealer_sum<<"\n    ";
-  for (int i : dealer)
-    cout << i << " ";
-  cout << "\n";
-
-  //Over 21
-  int gameresult = isWinLoseDraw(me_sum, dealer_sum);
-  switch (isWinLoseDraw(me_sum, dealer_sum)) {
-  case gamestatus::WIN:
-    cout<<"WIN\n";
-    break;
-  case gamestatus::LOSE:
-    cout<<"LOSE\n";
-    break;
-  case gamestatus::DRAW:
-    cout<<"DRAW\n";
-    break;
-  case gamestatus::ERROR:
-    cout<<"ERROR\n";
-    break;
-  default:
-    cout<<"what the heck\n";
-    break;
-  }
-
-  return gamestatus::ERROR;
+  return isWinLoseDraw(me_sum, dealer_sum);
 }
 
 int main(void) {
   vector<int> list = {5,3,8,10,3,5,7,10,6,7,10,1,9,10,5}; // Initialcards
   arrayFillRandom(list);
   fixArray(list);
+
+  putArrayNums(list, "list");
 
   switch (game(list)) {
     case gamestatus::WIN:
@@ -325,6 +301,26 @@ int main(void) {
 
     case gamestatus::DRAW:
       cout<<"DRAW\n";
+      break;
+
+    case gamestatus::DOUBLEDOWNTOWIN:
+      cout<<"DOUBLEDOWNTOWIN\n";
+      break;
+
+    case gamestatus::DOUBLEDOWNTOLOSE:
+      cout<<"DOUBLEDOWNTOLOSE\n";
+      break;
+
+    case gamestatus::DOUBLEDOWNTODRAW:
+      cout<<"DOUBLEDOWNTORAW\n";
+      break;
+
+    case gamestatus::ERROR:
+      cout<<"ERROR!\n";
+      break;
+
+    default:
+      cout<<"SOMEERROR\n";
       break;
   }
 }
