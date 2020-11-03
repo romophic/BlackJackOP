@@ -55,7 +55,7 @@ enum GAMESTATUS { // game results
   DOUBLEDOWNTOWIN = 3,
   DOUBLEDOWNTOLOSE = 4,
   DOUBLEDOWNTODRAW = 5,
-  SALENDER = 5,
+  SALENDER = 6,
   ERROR = -1
 };
 }
@@ -285,7 +285,7 @@ END: // end of game
   return isWinLoseDraw(me_sum, dealer_sum);
 }
 
-vector<int> result(7,0);
+vector<int> result(8,0);
 mutex mtx_result;
 mutex mtx_persent;
 
@@ -339,15 +339,21 @@ void threadGaming(int _n,int _threadnum) {
       mtx_result.unlock();
       break;
 
-    case gamestatus::ERROR:
+    case gamestatus::SALENDER:
       mtx_result.lock();
       result[6]++;
       mtx_result.unlock();
       break;
 
+    case gamestatus::ERROR:
+      mtx_result.lock();
+      result[7]++;
+      mtx_result.unlock();
+      break;
+
     default:
       mtx_result.lock();
-      result[6]++;
+      result[7]++;
       mtx_result.unlock();
       break;
     }
@@ -390,5 +396,6 @@ int main(void) {
   resultfile << "DOUBLEDOWNTOWIN," << result[3] << "\n";
   resultfile << "DOUBLEDOWNTOLOSE," << result[4] << "\n";
   resultfile << "DOUBLEDOWNTODRAW," << result[5] << "\n";
-  resultfile << "ERROR," << result[6];
+  resultfile << "SALENDER," << result[6] << "\n";
+  resultfile << "ERROR," << result[7];
 }
