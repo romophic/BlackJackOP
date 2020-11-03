@@ -8,6 +8,7 @@
 #include <condition_variable>
 #include <cstdint>
 #include <ctime>
+#include <fstream>
 #include <iostream>
 #include <random>
 #include <string>
@@ -46,25 +47,25 @@ void fixArray(vector<int> &_list) {
       i = 10;
 }
 
-namespace gamestatus{
-  enum GAMESTATUS { //game results
-    WIN   = 0,
-    LOSE  = 1,
-    DRAW = 2,
-    DOUBLEDOWNTOWIN = 3,
-    DOUBLEDOWNTOLOSE = 4,
-    DOUBLEDOWNTODRAW = 5,
-    SALENDER = 5,
-    ERROR = -1
-  };
+namespace gamestatus {
+enum GAMESTATUS { // game results
+  WIN = 0,
+  LOSE = 1,
+  DRAW = 2,
+  DOUBLEDOWNTOWIN = 3,
+  DOUBLEDOWNTOLOSE = 4,
+  DOUBLEDOWNTODRAW = 5,
+  SALENDER = 5,
+  ERROR = -1
+};
 }
-namespace cardstatus{
-  enum CARDSTATUS{ //card tyoes
-    HIT = 0,
-    STAND = 1,
-    DOUBLEDOWN = 2,
-    SALENDER = 3
-  };
+namespace cardstatus {
+enum CARDSTATUS { // card tyoes
+  HIT = 0,
+  STAND = 1,
+  DOUBLEDOWN = 2,
+  SALENDER = 3
+};
 }
 constexpr int chart_first[10][10] = { //first chart
   {0,0,0,0,0,0,0,0,0,0},
@@ -103,73 +104,78 @@ constexpr int chart_seconda[3][10] = { // in secon if include ace
   {1,1,1,1,1,1,1,1,1,1}
 };
 
-int getChooseCardFromFirst(int _me_sum, int _dealer_opened_card) { // Choose card from chart_first
+int getChooseCardFromFirst(
+    int _me_sum, int _dealer_opened_card) { // Choose card from chart_first
   // EDUCATION to me_sum
   if (_me_sum <= 8)
-    _me_sum=8;
+    _me_sum = 8;
   if (17 <= _me_sum)
-    _me_sum=17;
+    _me_sum = 17;
 
-  //Too
+  // Too
   if (10 <= _dealer_opened_card)
     _dealer_opened_card = 10;
   if (_dealer_opened_card == 1)
     _dealer_opened_card = 11;
 
-  return chart_first[_me_sum-8][_dealer_opened_card-2];
-} // done!
-int getChooseCardFromFirstAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_plusa
+  return chart_first[_me_sum - 8][_dealer_opened_card - 2];
+}
+int getChooseCardFromFirstAce(
+    int _me_sum, int _dealer_opened_card) { // Choose card from chart_plusa
   // EDUCATION to me_sum
   if (_me_sum <= 2)
-    _me_sum=2;
+    _me_sum = 2;
   if (9 <= _me_sum)
-    _me_sum=9;
+    _me_sum = 9;
 
-  //Too
+  // Too
   if (10 <= _dealer_opened_card)
     _dealer_opened_card = 10;
   if (_dealer_opened_card == 1)
     _dealer_opened_card = 11;
 
-  return chart_first[_me_sum-2][_dealer_opened_card-2];
-} // done!
+  return chart_first[_me_sum - 2][_dealer_opened_card - 2];
+}
 int getChooseCardFromSecond(int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
   // EDUCATION to me_sum
   if (_me_sum <= 11)
-    _me_sum=11;
+    _me_sum = 11;
   if (17 <= _me_sum)
-    _me_sum=17;
+    _me_sum = 17;
 
-  //Too
+  // Too
   if (_dealer_opened_card == 1)
     _dealer_opened_card = 11;
   if (10 <= _dealer_opened_card)
     _dealer_opened_card = 10;
 
-  return chart_first[_me_sum-11][_dealer_opened_card-2];
-}//done!
-int getChooseCardFromSecondAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
+  return chart_first[_me_sum - 11][_dealer_opened_card - 2];
+}
+int getChooseCardFromSecondAce(
+    int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
   // EDUCATION to me_sum
   if (_me_sum <= 7)
-    _me_sum=7;
+    _me_sum = 7;
   if (9 <= _me_sum)
-    _me_sum=9;
+    _me_sum = 9;
 
-  //Too
+  // Too
   if (10 <= _dealer_opened_card)
     _dealer_opened_card = 10;
   if (_dealer_opened_card == 1)
     _dealer_opened_card = 11;
 
-  return chart_first[_me_sum-7][_dealer_opened_card-2];
-}//done!
+  return chart_first[_me_sum - 7][_dealer_opened_card - 2];
+}
 
-int isWinLoseDraw(int &me_sum, int &dealer_sum) {
+constexpr int isWinLoseDraw(const int &me_sum, const int &dealer_sum) {
   if (21 < me_sum and 21 < dealer_sum) {
     return gamestatus::DRAW;
   } else {
-    if (21 < me_sum) return gamestatus::LOSE;
-    if (21 < dealer_sum) return gamestatus::WIN;
+    if (21 < me_sum)
+      return gamestatus::LOSE;
+    if (21 < dealer_sum)
+      return gamestatus::WIN;
 
     if (me_sum == dealer_sum) {
       return gamestatus::DRAW;
@@ -187,9 +193,9 @@ int isWinLoseDraw(int &me_sum, int &dealer_sum) {
 int game(const vector<int> &_list) { // code of kernel
   int cardpos = 0;                   // point of _list[]
   int me_sum = 0, dealer_sum = 0;    // both player's sum
-  bool atr=false;                    // Ace trigger
-  bool firsttr=true;                 // First trigger
-  int meshouldcard = 0;
+  bool atr = false;                  // Ace trigger
+  bool firsttr = true;               // First trigger
+  int meshouldcard = 0;              // should to do
   vector<int> me, dealer;            // Both hand
 
   // first hit time x2
@@ -208,65 +214,61 @@ int game(const vector<int> &_list) { // code of kernel
   if (dealer_sum == 21) // BlackJack!!
     return gamestatus::LOSE;
 
-
-  while (true) {  // Open card is dealer[0]
-    if (_list.size() - 1 < cardpos) {
-      cout<<"OverFlow\n";
+  while (true) { // Open card is dealer[0]
+    if (_list.size() - 1 < cardpos)
       return gamestatus::ERROR;
-    }
 
     if (firsttr) {
       firsttr = false;
-      if(atr){
-        meshouldcard = getChooseCardFromFirstAce(me_sum,dealer[0]);
-      }
-      else{
+      if (atr)
+        meshouldcard = getChooseCardFromFirstAce(me_sum, dealer[0]);
+      else
         meshouldcard = getChooseCardFromFirst(me_sum, dealer[0]);
-      }
     } else {
-      if(atr){
-        meshouldcard = getChooseCardFromSecondAce(me_sum,dealer[0]);
-      }
-      else{
+      if (atr)
+        meshouldcard = getChooseCardFromSecondAce(me_sum, dealer[0]);
+      else
         meshouldcard = getChooseCardFromSecond(me_sum, dealer[0]);
-      }
     }
 
     switch (meshouldcard) {
-      case cardstatus::HIT:
-        me.push_back(_list[cardpos]);cardpos++;
-        me_sum += me[me.size() - 1];
-        if (me[me.size() - 1] == 1)
-          atr=true;
+    case cardstatus::HIT:
+      me.push_back(_list[cardpos]);
+      cardpos++;
+      me_sum += me[me.size() - 1];
+      if (me[me.size() - 1] == 1)
+        atr = true;
 
-        if (21 <= me_sum)
-          goto END;
-        break;
-
-      case cardstatus::STAND:
+      if (21 <= me_sum)
         goto END;
-        break;
+      break;
 
-      case cardstatus::DOUBLEDOWN: // idk TODO:
-        me.push_back(_list[cardpos]);cardpos++;
-        me_sum += me[me.size() - 1];
+    case cardstatus::STAND:
+      goto END;
+      break;
 
-        switch (isWinLoseDraw(me_sum, dealer_sum)) {
-        case gamestatus::WIN:
-          return gamestatus::DOUBLEDOWNTOWIN;
-        case gamestatus::LOSE:
-          return gamestatus::DOUBLEDOWNTOLOSE;
-        case gamestatus::DRAW:
-          return gamestatus::DOUBLEDOWNTODRAW;
-        default:
-          return gamestatus::ERROR;
-        }
+    case cardstatus::DOUBLEDOWN: // idk TODO:
+      me.push_back(_list[cardpos]);
+      cardpos++;
+      me_sum += me[me.size() - 1];
 
-      case cardstatus::SALENDER:; // idk TODO:
-        return gamestatus::SALENDER;
-
+      switch (isWinLoseDraw(me_sum, dealer_sum)) {
+      case gamestatus::WIN:
+        return gamestatus::DOUBLEDOWNTOWIN;
+      case gamestatus::LOSE:
+        return gamestatus::DOUBLEDOWNTOLOSE;
+      case gamestatus::DRAW:
+        return gamestatus::DOUBLEDOWNTODRAW;
       default:
         return gamestatus::ERROR;
+      }
+      return gamestatus::ERROR;
+
+    case cardstatus::SALENDER:; // idk TODO:
+      return gamestatus::SALENDER;
+
+    default:
+      return gamestatus::ERROR;
     }
   }
 END: // end of game
@@ -283,44 +285,84 @@ END: // end of game
   return isWinLoseDraw(me_sum, dealer_sum);
 }
 
-int main(void) {
-  vector<int> list = {5,3,8,10,3,5,7,10,6,7,10,1,9,10,5}; // Initialcards
+vector<int> result(7,0);
+
+void threadGaming() {
+  vector<int> list(15,0); // Initialcards
   arrayFillRandom(list);
   fixArray(list);
 
-  putArrayNums(list, "list");
-
   switch (game(list)) {
-    case gamestatus::WIN:
-      cout<<"WIN\n";
-      break;
+  case gamestatus::WIN:
+    result[0]++;
+    break;
 
-    case gamestatus::LOSE:
-      cout<<"LOSE\n";
-      break;
+  case gamestatus::LOSE:
+    result[1]++;
+    break;
 
-    case gamestatus::DRAW:
-      cout<<"DRAW\n";
-      break;
+  case gamestatus::DRAW:
+    result[2]++;
+    break;
 
-    case gamestatus::DOUBLEDOWNTOWIN:
-      cout<<"DOUBLEDOWNTOWIN\n";
-      break;
+  case gamestatus::DOUBLEDOWNTOWIN:
+    result[3]++;
+    break;
 
-    case gamestatus::DOUBLEDOWNTOLOSE:
-      cout<<"DOUBLEDOWNTOLOSE\n";
-      break;
+  case gamestatus::DOUBLEDOWNTOLOSE:
+    result[4]++;
+    break;
 
-    case gamestatus::DOUBLEDOWNTODRAW:
-      cout<<"DOUBLEDOWNTORAW\n";
-      break;
+  case gamestatus::DOUBLEDOWNTODRAW:
+    result[5]++;
+    break;
 
-    case gamestatus::ERROR:
-      cout<<"ERROR!\n";
-      break;
+  case gamestatus::ERROR:
+    result[6]++;
+    break;
 
-    default:
-      cout<<"SOMEERROR\n";
-      break;
+  default:
+    result[6]++;
+    break;
   }
+}
+
+int main(void) {
+  long n;
+  vector<int> list(15,0); // Initialcards
+  ofstream resultfile("result.csv");
+  if (!resultfile.is_open()) {
+    cout<<"File open error\n";
+    return -1;
+  }
+
+  cout<<"How many test?: "<<flush;
+  cin>>n;
+
+  cout<<"Threads: "<<thread::hardware_concurrency()<<"\n";
+  cout<<"Executing...\n";
+
+  vector<thread> threads;
+  int persent=0;
+  for (int i=0;i<n;i++) {
+    threads.emplace_back(thread(threadGaming));
+    threads[i].join();
+
+    if (persent != int(i / double(n) * 100)){
+      persent = int(i / double(n) * 100);
+      cout<<persent<<"%...\n";
+    }
+  }
+
+  cout<<"100%!\n";
+  cout<<"Complete excuting!\n";
+
+  resultfile << "SUM," << n << "\n";
+  resultfile << "WIN," << result[0] << "\n";
+  resultfile << "LOSE," << result[1] << "\n";
+  resultfile << "DRAW," << result[2] << "\n";
+  resultfile << "DOUBLEDOWNTOWIN," << result[3] << "\n";
+  resultfile << "DOUBLEDOWNTOLOSE," << result[4] << "\n";
+  resultfile << "DOUBLEDOWNTODRAW," << result[5] << "\n";
+  resultfile << "ERROR," << result[6];
 }
