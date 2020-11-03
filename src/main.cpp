@@ -285,6 +285,16 @@ END: // end of game
   return isWinLoseDraw(me_sum, dealer_sum);
 }
 
+void putLogo(){
+  const string logo[] = {
+    #include "logo.txt"
+  };
+  
+  for(const auto &i:logo){
+    cout<<i<<"\n";
+  }
+}
+
 vector<int> result(8,0);
 mutex mtx_result;
 mutex mtx_persent;
@@ -361,6 +371,8 @@ void threadGaming(int _n,int _threadnum) {
 }
 
 int main(void) {
+  putLogo();
+
   long n;
   int threadnum=thread::hardware_concurrency();
   vector<int> list(15,0); // Initialcards
