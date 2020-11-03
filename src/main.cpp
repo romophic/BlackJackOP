@@ -105,8 +105,7 @@ constexpr int chart_seconda[3][10] = { // in secon if include ace
   {1,1,1,1,1,1,1,1,1,1}
 };
 
-int getChooseCardFromFirst(
-    int _me_sum, int _dealer_opened_card) { // Choose card from chart_first
+int getChooseCardFromFirst(int _me_sum, int _dealer_opened_card) { // Choose card from chart_first
   // EDUCATION to me_sum
   if (_me_sum <= 8)
     _me_sum = 8;
@@ -121,8 +120,7 @@ int getChooseCardFromFirst(
 
   return chart_first[_me_sum - 8][_dealer_opened_card - 2];
 }
-int getChooseCardFromFirstAce(
-    int _me_sum, int _dealer_opened_card) { // Choose card from chart_plusa
+int getChooseCardFromFirstAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_plusa
   // EDUCATION to me_sum
   if (_me_sum <= 2)
     _me_sum = 2;
@@ -152,8 +150,7 @@ int getChooseCardFromSecond(int _me_sum, int _dealer_opened_card) { // Choose ca
 
   return chart_first[_me_sum - 11][_dealer_opened_card - 2];
 }
-int getChooseCardFromSecondAce(
-    int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
+int getChooseCardFromSecondAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
   // EDUCATION to me_sum
   if (_me_sum <= 7)
     _me_sum = 7;
@@ -290,7 +287,6 @@ void putLogo(){
   const string logo[] = {
     #include "logo.txt"
   };
-  
   for(const auto &i:logo){
     cout<<i<<"\n";
   }
