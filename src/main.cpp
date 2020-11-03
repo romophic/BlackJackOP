@@ -50,12 +50,16 @@ void fixArray(vector<int> &_list) {
 namespace gamestatus {
 enum GAMESTATUS { // game results
   WIN = 0,
-  LOSE = 1,
-  DRAW = 2,
-  DOUBLEDOWNTOWIN = 3,
-  DOUBLEDOWNTOLOSE = 4,
-  DOUBLEDOWNTODRAW = 5,
-  SALENDER = 6,
+  BLACKJACK=1,
+  LOSE = 2,
+  DRAW = 3,
+
+  DOUBLEDOWNTOWIN = 4,
+  DOUBLEDOWNTOBLACKJACK=5,
+  DOUBLEDOWNTOLOSE = 6,
+  DOUBLEDOWNTODRAW = 7,
+
+  SALENDER = 8,
   ERROR = -1
 };
 }
@@ -168,7 +172,7 @@ int getChooseCardFromSecondAce(
   return chart_first[_me_sum - 7][_dealer_opened_card - 2];
 }
 
-constexpr int isWinLoseDraw(const int &me_sum, const int &dealer_sum) {
+constexpr int isWinLoseDrawBJ(const int &me_sum, const int &dealer_sum) {
   if (21 < me_sum and 21 < dealer_sum) {
     return gamestatus::DRAW;
   } else {
@@ -176,6 +180,9 @@ constexpr int isWinLoseDraw(const int &me_sum, const int &dealer_sum) {
       return gamestatus::LOSE;
     if (21 < dealer_sum)
       return gamestatus::WIN;
+
+    if(me_sum == 21 and dealer_sum != 21)
+      return gamestatus::BLACKJACK;
 
     if (me_sum == dealer_sum) {
       return gamestatus::DRAW;
@@ -190,11 +197,37 @@ constexpr int isWinLoseDraw(const int &me_sum, const int &dealer_sum) {
   return gamestatus::ERROR;
 }
 
+constexpr int isDoubleWinLoseDrawBJ(const int &me_sum, const int &dealer_sum) {
+  if (21 < me_sum and 21 < dealer_sum) {
+    return gamestatus::DOUBLEDOWNTODRAW;
+  } else {
+    if (21 < me_sum)
+      return gamestatus::DOUBLEDOWNTOLOSE;
+    if (21 < dealer_sum)
+      return gamestatus::DOUBLEDOWNTOWIN;
+
+    if(me_sum == 21 and dealer_sum != 21)
+      return gamestatus::DOUBLEDOWNTOBLACKJACK;
+
+    if (me_sum == dealer_sum) {
+      return gamestatus::DOUBLEDOWNTODRAW;
+    } else {
+      if (me_sum < dealer_sum) {
+        return gamestatus::DOUBLEDOWNTOLOSE;
+      } else {
+        return gamestatus::DOUBLEDOWNTOWIN;
+      }
+    }
+  }
+  return gamestatus::ERROR;
+}
+
 int game(const vector<int> &_list) { // code of kernel
   int cardpos = 0;                   // point of _list[]
   int me_sum = 0, dealer_sum = 0;    // both player's sum
   bool atr = false;                  // Ace trigger
   bool firsttr = true;               // First trigger
+  bool doubledowntr=false;           // Doubledown trigger
   int meshouldcard = 0;              // should to do
   vector<int> me, dealer;            // Both hand
 
@@ -208,11 +241,12 @@ int game(const vector<int> &_list) { // code of kernel
   dealer.push_back(_list[cardpos]);cardpos++;
   dealer_sum = dealer[0] + dealer[1];
 
-  if (me_sum == 21) // BlackJack!!
-    return gamestatus::WIN;
-
-  if (dealer_sum == 21) // BlackJack!!
+  if(me_sum == 21 and dealer_sum != 21){
+    return gamestatus::BLACKJACK;
+  }
+  if(dealer_sum == 21 and me_sum != 21){
     return gamestatus::LOSE;
+  }
 
   while (true) { // Open card is dealer[0]
     if (_list.size() - 1 < cardpos)
@@ -251,18 +285,11 @@ int game(const vector<int> &_list) { // code of kernel
       me.push_back(_list[cardpos]);
       cardpos++;
       me_sum += me[me.size() - 1];
-
-      switch (isWinLoseDraw(me_sum, dealer_sum)) {
-      case gamestatus::WIN:
-        return gamestatus::DOUBLEDOWNTOWIN;
-      case gamestatus::LOSE:
-        return gamestatus::DOUBLEDOWNTOLOSE;
-      case gamestatus::DRAW:
-        return gamestatus::DOUBLEDOWNTODRAW;
-      default:
-        return gamestatus::ERROR;
-      }
-      return gamestatus::ERROR;
+      if (me[me.size() - 1] == 1)
+        atr = true;
+      doubledowntr=true;
+      goto END;
+      
 
     case cardstatus::SALENDER:; // idk TODO:
       return gamestatus::SALENDER;
@@ -282,7 +309,11 @@ END: // end of game
   if(atr and me_sum+10 <= 21)
     me_sum+=10;
 
-  return isWinLoseDraw(me_sum, dealer_sum);
+  if(doubledowntr){
+    return isDoubleWinLoseDrawBJ(me_sum,dealer_sum);
+  }else{
+    return isWinLoseDrawBJ(me_sum, dealer_sum);
+  }
 }
 
 void putLogo(){
@@ -295,7 +326,7 @@ void putLogo(){
   }
 }
 
-vector<int> result(8,0);
+vector<int> result(10,0);
 mutex mtx_result;
 mutex mtx_persent;
 
@@ -319,51 +350,63 @@ void threadGaming(int _n,int _threadnum) {
       mtx_result.unlock();
       break;
 
-    case gamestatus::LOSE:
+    case gamestatus::BLACKJACK:
       mtx_result.lock();
       result[1]++;
       mtx_result.unlock();
       break;
 
-    case gamestatus::DRAW:
+    case gamestatus::LOSE:
       mtx_result.lock();
       result[2]++;
       mtx_result.unlock();
       break;
 
-    case gamestatus::DOUBLEDOWNTOWIN:
+    case gamestatus::DRAW:
       mtx_result.lock();
       result[3]++;
       mtx_result.unlock();
       break;
 
-    case gamestatus::DOUBLEDOWNTOLOSE:
+    case gamestatus::DOUBLEDOWNTOWIN:
       mtx_result.lock();
       result[4]++;
       mtx_result.unlock();
       break;
 
-    case gamestatus::DOUBLEDOWNTODRAW:
+    case gamestatus::DOUBLEDOWNTOBLACKJACK:
       mtx_result.lock();
       result[5]++;
       mtx_result.unlock();
       break;
 
-    case gamestatus::SALENDER:
+    case gamestatus::DOUBLEDOWNTOLOSE:
       mtx_result.lock();
       result[6]++;
       mtx_result.unlock();
       break;
 
-    case gamestatus::ERROR:
+    case gamestatus::DOUBLEDOWNTODRAW:
       mtx_result.lock();
       result[7]++;
       mtx_result.unlock();
       break;
 
+    case gamestatus::SALENDER:
+      mtx_result.lock();
+      result[8]++;
+      mtx_result.unlock();
+      break;
+
+    case gamestatus::ERROR:
+      mtx_result.lock();
+      result[9]++;
+      mtx_result.unlock();
+      break;
+
     default:
       mtx_result.lock();
-      result[7]++;
+      result[9]++;
       mtx_result.unlock();
       break;
     }
@@ -403,11 +446,13 @@ int main(void) {
 
   resultfile << "SUM," << n*threadnum << "\n";
   resultfile << "WIN," << result[0] << "\n";
-  resultfile << "LOSE," << result[1] << "\n";
-  resultfile << "DRAW," << result[2] << "\n";
-  resultfile << "DOUBLEDOWNTOWIN," << result[3] << "\n";
-  resultfile << "DOUBLEDOWNTOLOSE," << result[4] << "\n";
-  resultfile << "DOUBLEDOWNTODRAW," << result[5] << "\n";
-  resultfile << "SALENDER," << result[6] << "\n";
-  resultfile << "ERROR," << result[7];
+  resultfile << "BLACKJACK," << result[1] << "\n";
+  resultfile << "LOSE," << result[2] << "\n";
+  resultfile << "DRAW," << result[3] << "\n";
+  resultfile << "DOUBLEDOWNTOWIN," << result[4] << "\n";
+  resultfile << "DOUBLEDOWNTOBLACKJACK," << result[5] << "\n";
+  resultfile << "DOUBLEDOWNTOLOSE," << result[6] << "\n";
+  resultfile << "DOUBLEDOWNTODRAW," << result[7] << "\n";
+  resultfile << "SALENDER," << result[8] << "\n";
+  resultfile << "ERROR," << result[9];
 }
