@@ -286,49 +286,69 @@ END: // end of game
 }
 
 vector<int> result(7,0);
+mutex mtx;
 
-void threadGaming() {
+void threadGaming(int _magnification) {
   vector<int> list(15,0); // Initialcards
-  arrayFillRandom(list);
-  fixArray(list);
+  for(int i=0;i<_magnification;i++){
+    arrayFillRandom(list);
+    fixArray(list);
 
-  switch (game(list)) {
-  case gamestatus::WIN:
-    result[0]++;
-    break;
+    switch (game(list)) {
+    case gamestatus::WIN:
+      mtx.lock();
+      result[0]++;
+      mtx.unlock();
+      break;
 
-  case gamestatus::LOSE:
-    result[1]++;
-    break;
+    case gamestatus::LOSE:
+      mtx.lock();
+      result[1]++;
+      mtx.unlock();
+      break;
 
-  case gamestatus::DRAW:
-    result[2]++;
-    break;
+    case gamestatus::DRAW:
+      mtx.lock();
+      result[2]++;
+      mtx.unlock();
+      break;
 
-  case gamestatus::DOUBLEDOWNTOWIN:
-    result[3]++;
-    break;
+    case gamestatus::DOUBLEDOWNTOWIN:
+      mtx.lock();
+      result[3]++;
+      mtx.unlock();
+      break;
 
-  case gamestatus::DOUBLEDOWNTOLOSE:
-    result[4]++;
-    break;
+    case gamestatus::DOUBLEDOWNTOLOSE:
+      mtx.lock();
+      result[4]++;
+      mtx.unlock();
+      break;
 
-  case gamestatus::DOUBLEDOWNTODRAW:
-    result[5]++;
-    break;
+    case gamestatus::DOUBLEDOWNTODRAW:
+      mtx.lock();
+      result[5]++;
+      mtx.unlock();
+      break;
 
-  case gamestatus::ERROR:
-    result[6]++;
-    break;
+    case gamestatus::ERROR:
+      mtx.lock();
+      result[6]++;
+      mtx.unlock();
+      break;
 
-  default:
-    result[6]++;
-    break;
+    default:
+      mtx.lock();
+      result[6]++;
+      mtx.unlock();
+      break;
+    }
   }
 }
 
 int main(void) {
   long n;
+  int threadnum=thread::hardware_concurrency();
   vector<int> list(15,0); // Initialcards
   ofstream resultfile("result.csv");
   if (!resultfile.is_open()) {
@@ -336,28 +356,26 @@ int main(void) {
     return -1;
   }
 
-  cout<<"How many test?: "<<flush;
+  cout<<"How many test?(x"<<threadnum<<") :"<<flush;
   cin>>n;
 
-  cout<<"Threads: "<<thread::hardware_concurrency()<<"\n";
-  cout<<"Executing...\n";
-
   vector<thread> threads;
-  int persent=0;
-  for (int i=0;i<n;i++) {
-    threads.emplace_back(thread(threadGaming));
-    threads[i].join();
 
-    if (persent != int(i / double(n) * 100)){
-      persent = int(i / double(n) * 100);
-      cout<<persent<<"%...\n";
-    }
+  cout<<"Making threads...\n";
+  for (int i=0;i<threadnum;i++){
+    threads.emplace_back(thread(threadGaming,n));
+    cout<<i+1<<"/"<<threadnum<<"\n";
   }
+  cout<<"done!\n";
 
-  cout<<"100%!\n";
+  cout<<"Waiting threads...  \n";
+  for (int i=0;i<threadnum;i++){
+    threads[i].join();
+    cout<<i<<":👍"<<"\n";
+  }
   cout<<"Complete excuting!\n";
 
-  resultfile << "SUM," << n << "\n";
+  resultfile << "SUM," << n*threadnum << "\n";
   resultfile << "WIN," << result[0] << "\n";
   resultfile << "LOSE," << result[1] << "\n";
   resultfile << "DRAW," << result[2] << "\n";
