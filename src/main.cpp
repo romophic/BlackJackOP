@@ -5,7 +5,6 @@
 //  |____/|_|\__,_|\___|_|\_\___/ \__,_|\___|_|\_\\___/|_|     //
 //                      Made by NULLCT                         //
 
-#include <condition_variable>
 #include <cstdint>
 #include <ctime>
 #include <fstream>
@@ -206,7 +205,7 @@ int game(const vector<int> &_list) { // code of kernel
   dealer.push_back(_list[cardpos]);cardpos++;
   dealer_sum = dealer[0] + dealer[1];
 
-  if (me_sum == 21) // BlackJack!!
+  if ((me[0] == 1 or me[1] == 1) and me_sum == 11) // BlackJack!!
     return gamestatus::BLACKJACK;
 
   if (dealer_sum == 21) // BlackJack!!
