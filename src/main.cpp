@@ -187,7 +187,7 @@ constexpr int isWinLoseDraw(const int &me_sum, const int &dealer_sum) {
   return gamestatus::ERROR;
 }
 
-int game(const vector<int> &_list) { // code of kernel
+int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
   int cardpos = 0;                   // point of _list[]
   int me_sum = 0, dealer_sum = 0;    // both player's sum
   bool atr = false;                  // Ace trigger
