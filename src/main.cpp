@@ -292,7 +292,7 @@ void putLogo(){
 }
 
 vector<int> result(8,0);
-mutex mtx_result;
+mutex mtx_result[9];
 mutex mtx_persent;
 
 void threadGaming(int _n,int _threadnum) {
@@ -310,63 +310,63 @@ void threadGaming(int _n,int _threadnum) {
 
     switch (game(list)) {
     case gamestatus::WIN:
-      mtx_result.lock();
+      mtx_result[0].lock();
       result[0]++;
-      mtx_result.unlock();
+      mtx_result[0].unlock();
       break;
 
     case gamestatus::LOSE:
-      mtx_result.lock();
+      mtx_result[1].lock();
       result[1]++;
-      mtx_result.unlock();
+      mtx_result[1].unlock();
       break;
 
     case gamestatus::DRAW:
-      mtx_result.lock();
+      mtx_result[2].lock();
       result[2]++;
-      mtx_result.unlock();
+      mtx_result[2].unlock();
       break;
 
     case gamestatus::DOUBLEDOWNTOWIN:
-      mtx_result.lock();
+      mtx_result[3].lock();
       result[3]++;
-      mtx_result.unlock();
+      mtx_result[3].unlock();
       break;
 
     case gamestatus::DOUBLEDOWNTOLOSE:
-      mtx_result.lock();
+      mtx_result[4].lock();
       result[4]++;
-      mtx_result.unlock();
+      mtx_result[4].unlock();
       break;
 
     case gamestatus::DOUBLEDOWNTODRAW:
-      mtx_result.lock();
+      mtx_result[5].lock();
       result[5]++;
-      mtx_result.unlock();
+      mtx_result[5].unlock();
       break;
 
     case gamestatus::SALENDER:
-      mtx_result.lock();
+      mtx_result[6].lock();
       result[6]++;
-      mtx_result.unlock();
+      mtx_result[6].unlock();
       break;
 
     case gamestatus::BLACKJACK:
-      mtx_result.lock();
+      mtx_result[7].lock();
       result[7]++;
-      mtx_result.unlock();
+      mtx_result[7].unlock();
       break;
 
     case gamestatus::ERROR:
-      mtx_result.lock();
+      mtx_result[8].lock();
       result[8]++;
-      mtx_result.unlock();
+      mtx_result[8].unlock();
       break;
 
     default:
-      mtx_result.lock();
+      mtx_result[8].lock();
       result[8]++;
-      mtx_result.unlock();
+      mtx_result[8].unlock();
       break;
     }
   }
