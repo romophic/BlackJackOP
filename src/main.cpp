@@ -292,7 +292,7 @@ void putLogo(){
 }
 
 vector<int> result(8,0);
-mutex mtx_result[9];
+mutex mtx_result;
 mutex mtx_persent;
 
 void threadGaming(int _n,int _threadnum) {
@@ -310,63 +310,63 @@ void threadGaming(int _n,int _threadnum) {
 
     switch (game(list)) {
     case gamestatus::WIN:
-      mtx_result[0].lock();
+      mtx_result.lock();
       result[0]++;
-      mtx_result[0].unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::LOSE:
-      mtx_result[1].lock();
+      mtx_result.lock();
       result[1]++;
-      mtx_result[1].unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::DRAW:
-      mtx_result[2].lock();
+      mtx_result.lock();
       result[2]++;
-      mtx_result[2].unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::DOUBLEDOWNTOWIN:
-      mtx_result[3].lock();
+      mtx_result.lock();
       result[3]++;
-      mtx_result[3].unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::DOUBLEDOWNTOLOSE:
-      mtx_result[4].lock();
+      mtx_result.lock();
       result[4]++;
-      mtx_result[4].unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::DOUBLEDOWNTODRAW:
-      mtx_result[5].lock();
+      mtx_result.lock();
       result[5]++;
-      mtx_result[5].unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::SALENDER:
-      mtx_result[6].lock();
+      mtx_result.lock();
       result[6]++;
-      mtx_result[6].unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::BLACKJACK:
-      mtx_result[7].lock();
+      mtx_result.lock();
       result[7]++;
-      mtx_result[7].unlock();
+      mtx_result.unlock();
       break;
 
     case gamestatus::ERROR:
-      mtx_result[8].lock();
+      mtx_result.lock();
       result[8]++;
-      mtx_result[8].unlock();
+      mtx_result.unlock();
       break;
 
     default:
-      mtx_result[8].lock();
+      mtx_result.lock();
       result[8]++;
-      mtx_result[8].unlock();
+      mtx_result.unlock();
       break;
     }
   }
