@@ -250,12 +250,3 @@ END: // end of game
 
   return isWinLoseDraw(me_sum, dealer_sum);
 }
-
-void putLogo(){
-  const string logo[] = {
-    #include "logo.txt"
-  };
-  for(const auto &i:logo){
-    cout<<i<<"\n";
-  }
-}
