@@ -3,48 +3,77 @@
 #include <iostream>
 #include <boost/multiprecision/cpp_int.hpp>
 
-void arrayGaming(void) {
+int gameWithRandomList(){
   vector<int> list(15); // Initialcards
+  arrayFillRandom(list);
+  fixArray(list);
+  return game(list);
+}
 
-  boost::multiprecision::cpp_int money = 10;
-
-  while(true){
-    arrayFillRandom(list);
-    fixArray(list);
-    switch (game(list)) {
+double getBetMoneyMG(int _gamestatus){
+  switch (_gamestatus) {
     case gamestatus::WIN:
-      break;
+      return 2;
 
     case gamestatus::LOSE:
-      break;
+      return 0;
 
     case gamestatus::DRAW:
-      break;
+      return 0.5;
 
     case gamestatus::DOUBLEDOWNTOWIN:
-      break;
+      return 4;
 
     case gamestatus::DOUBLEDOWNTOLOSE:
-      break;
+      return 0;
 
     case gamestatus::DOUBLEDOWNTODRAW:
-      break;
+      return 2;
 
     case gamestatus::SALENDER:
-      break;
+      return 0.5;
 
     case gamestatus::BLACKJACK:
-      break;
+      return 2.5;
 
     case gamestatus::ERROR:
-      break;
+      return -1;
 
     default:
-      break;
+      return -1;
+  }
+}
+
+constexpr long defaultmoney=10;
+
+void updateBetMoney(long &_betmoney,int _gameresult){
+  if(_gameresult == gamestatus::LOSE or _gameresult == gamestatus::DOUBLEDOWNTOLOSE or _gameresult == gamestatus::SALENDER){
+    _betmoney = defaultmoney;
+  }else{
+    if(_betmoney == defaultmoney or _betmoney == defaultmoney*2){
+      _betmoney *= 2;
+    }else if(_betmoney == defaultmoney*4){
+      _betmoney = defaultmoney*3;
     }
   }
+}
 
-  return;
+void arrayGaming(void) {
+  long betmoney=defaultmoney;
+  long double paymoney=0;
+  long double getmoney=0;
+
+  cout.precision(10);
+
+  for(int i=0;i<pow(10,6);i++){
+    int gameresult=gameWithRandomList();
+
+    paymoney+=betmoney;
+    getmoney+=betmoney*getBetMoneyMG(gameresult);
+
+    updateBetMoney(betmoney,gameresult);
+  }
+  cout<<paymoney<<" "<<getmoney<<"\n";
 }
 
 int main(){
