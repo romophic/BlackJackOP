@@ -34,3 +34,6 @@
 #Others
 build/
 .vscode/
+.cache/
+compile_commands.json
+result.csv
