@@ -1,14 +1,6 @@
-#include "util.cpp"
-#include "blackjack.cpp"
+#include "bjutil.cpp"
 #include <iostream>
 #include <boost/multiprecision/cpp_int.hpp>
-
-int gameWithRandomList(){
-  vector<int> list(15); // Initialcards
-  arrayFillRandom(list);
-  fixArray(list);
-  return game(list);
-}
 
 double getBetMoneyMG(int _gamestatus){
   switch (_gamestatus) {

@@ -1,7 +1,7 @@
+#pragma once
+#include "bjutil.cpp"
 #include <vector>
 #include <iostream>
-#include "util.cpp"
-#include "blackjack.cpp"
 
 using namespace std;
 
@@ -10,7 +10,6 @@ mutex mtx_result;
 mutex mtx_persent;
 
 void threadGaming(int _n,int _threadnum) {
-  vector<int> list(15,0); // Initialcards
   int persent=0;
   for(int i=0;i<_n;i++){
     if(persent != int(double(i)/_n*100)){
@@ -19,10 +18,8 @@ void threadGaming(int _n,int _threadnum) {
       cout<<_threadnum<<":"<<persent<<"%"<<endl;
       mtx_persent.unlock();
     }
-    arrayFillRandom(list);
-    fixArray(list);
 
-    switch (game(list)) {
+    switch (gameWithRandomList()) {
     case gamestatus::WIN:
       mtx_result.lock();
       result[0]++;

@@ -1,3 +1,5 @@
+#pragma once
+#include "blackjack.cpp"
 #include <random>
 #include <vector>
 #include <iostream>
@@ -41,3 +43,11 @@ void fixArray(vector<int> &_list) {
     if (10 <= i)
       i = 10;
 }
+
+int gameWithRandomList(){
+  vector<int> list(15); // Initialcards
+  arrayFillRandom(list);
+  fixArray(list);
+  return game(list);
+}
+
