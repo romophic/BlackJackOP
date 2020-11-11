@@ -251,3 +251,106 @@ END: // end of game
 
   return isWinLoseDraw(me_sum, dealer_sum);
 }
+
+int gameWithDebugLog(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
+  cout<<"list:";
+  for(auto &i:_list)
+    cout<<i<<" ";
+  cout<<endl;
+  int cardpos = 0;                   // point of _list[]
+  int me_sum = 0, dealer_sum = 0;    // both player's sum
+  bool atr = false;                  // Ace trigger
+  bool firsttr = true;               // First trigger
+  int meshouldcard = 0;              // should to do
+  vector<int> me, dealer;            // Both hand
+
+  // first hit time x2
+  me.push_back(_list[cardpos]);cardpos++;
+  me.push_back(_list[cardpos]);cardpos++;
+  me_sum = me[0] + me[1];
+  if(me[0] == 1 or me[1] == 1) atr=true;
+
+  dealer.push_back(_list[cardpos]);cardpos++;
+  dealer.push_back(_list[cardpos]);cardpos++;
+  dealer_sum = dealer[0] + dealer[1];
+
+  if ((me[0] == 1 or me[1] == 1) and me_sum == 11) // BlackJack!!
+    return gamestatus::BLACKJACK;
+
+  if (dealer_sum == 21) // BlackJack!!
+    return gamestatus::LOSE;
+
+  cout<<"acts:"<<endl;
+  while (true) { // Open card is dealer[0]
+    if (_list.size() - 1 < cardpos)
+      return gamestatus::ERROR;
+
+    if (firsttr) {
+      firsttr = false;
+      if (atr)
+        meshouldcard = getChooseCardFromFirstAce(me_sum, dealer[0]);
+      else
+        meshouldcard = getChooseCardFromFirst(me_sum, dealer[0]);
+    } else {
+      if (atr)
+        meshouldcard = getChooseCardFromSecondAce(me_sum, dealer[0]);
+      else
+        meshouldcard = getChooseCardFromSecond(me_sum, dealer[0]);
+    }
+
+    switch (meshouldcard) {
+    case cardstatus::HIT:
+      cout<<"HIT"<<endl;
+      me.push_back(_list[cardpos]);
+      cardpos++;
+      me_sum += me[me.size() - 1];
+      if (me[me.size() - 1] == 1)
+        atr = true;
+
+      if (21 <= me_sum)
+        goto END;
+      break;
+
+    case cardstatus::STAND:
+      cout<<"STAND"<<endl;
+      goto END;
+      break;
+
+    case cardstatus::DOUBLEDOWN: // idk TODO:
+      cout<<"DOUBLEDOWN"<<endl;
+      me.push_back(_list[cardpos]);
+      cardpos++;
+      me_sum += me[me.size() - 1];
+
+      switch (isWinLoseDraw(me_sum, dealer_sum)) {
+      case gamestatus::WIN:
+        return gamestatus::DOUBLEDOWNTOWIN;
+      case gamestatus::LOSE:
+        return gamestatus::DOUBLEDOWNTOLOSE;
+      case gamestatus::DRAW:
+        return gamestatus::DOUBLEDOWNTODRAW;
+      default:
+        return gamestatus::ERROR;
+      }
+      return gamestatus::ERROR;
+
+    case cardstatus::SALENDER:; // idk TODO:
+      return gamestatus::SALENDER;
+
+    default:
+      return gamestatus::ERROR;
+    }
+  }
+END: // end of game
+
+  // dealer take card while ($sum < 17)
+  while(dealer_sum < 17){
+    dealer.push_back(_list[cardpos]);cardpos++;
+    dealer_sum += dealer[dealer.size() - 1];
+  }
+
+  if(atr and me_sum+10 <= 21)
+    me_sum+=10;
+
+  return isWinLoseDraw(me_sum, dealer_sum);
+}

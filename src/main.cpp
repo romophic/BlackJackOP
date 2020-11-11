@@ -1,4 +1,5 @@
 #include "bjutil.cpp"
+#include "checkbj.cpp"
 #include <iostream>
 #include <boost/multiprecision/cpp_int.hpp>
 
@@ -68,6 +69,55 @@ void arrayGaming(void) {
   cout<<paymoney<<" "<<getmoney<<"\n";
 }
 
+void checkBJ(){
+  vector<int> list(15);
+  arrayFillRandom(list);
+  fixArray(list);
+  
+  switch (gameWithDebugLog(list)) {
+    case gamestatus::WIN:
+      cout<<"result:WIN"<<endl;
+      break;
+
+    case gamestatus::LOSE:
+      cout<<"result:LOSE"<<endl;
+      break;
+
+    case gamestatus::DRAW:
+      cout<<"result:DRAW"<<endl;
+      break;
+
+    case gamestatus::DOUBLEDOWNTOWIN:
+      cout<<"result:DOUBLEDOWNTOWIN"<<endl;
+      break;
+
+    case gamestatus::DOUBLEDOWNTOLOSE:
+      cout<<"result:DOUBLEDOWNTOLOSE"<<endl;
+      break;
+
+    case gamestatus::DOUBLEDOWNTODRAW:
+      cout<<"result:DOUBLEDOWNTODRAW"<<endl;
+      break;
+
+    case gamestatus::SALENDER:
+      cout<<"result:SALENDER"<<endl;
+      break;
+
+    case gamestatus::BLACKJACK:
+      cout<<"result:BLACKJACK"<<endl;
+      break;
+
+    case gamestatus::ERROR:
+      cout<<"result:ERROR"<<endl;
+      break;
+
+    default:
+      cout<<"result:ERROR"<<endl;
+      break;
+  }
+}
+
 int main(){
-  arrayGaming();
+  for(int i=0;i<100;i++)
+    checkBJ();
 }
