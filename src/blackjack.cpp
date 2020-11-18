@@ -253,7 +253,7 @@ END: // end of game
 }
 
 int gameWithDebugLog(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
-  cout<<"list:";
+  cout<<"list:"<<endl<<"  ";
   for(auto &i:_list)
     cout<<i<<" ";
   cout<<endl;
@@ -273,6 +273,7 @@ int gameWithDebugLog(const vector<int> &_list) { // code of kernel (0.0000044s)(
   dealer.push_back(_list[cardpos]);cardpos++;
   dealer.push_back(_list[cardpos]);cardpos++;
   dealer_sum = dealer[0] + dealer[1];
+  cout<<"dealeropencard: "<<dealer[0]<<endl;
 
   if ((me[0] == 1 or me[1] == 1) and me_sum == 11) // BlackJack!!
     return gamestatus::BLACKJACK;
@@ -300,7 +301,7 @@ int gameWithDebugLog(const vector<int> &_list) { // code of kernel (0.0000044s)(
 
     switch (meshouldcard) {
     case cardstatus::HIT:
-      cout<<"HIT"<<endl;
+      cout<<"  HIT"<<endl;
       me.push_back(_list[cardpos]);
       cardpos++;
       me_sum += me[me.size() - 1];
@@ -312,15 +313,24 @@ int gameWithDebugLog(const vector<int> &_list) { // code of kernel (0.0000044s)(
       break;
 
     case cardstatus::STAND:
-      cout<<"STAND"<<endl;
+      cout<<"  STAND"<<endl;
       goto END;
       break;
 
     case cardstatus::DOUBLEDOWN: // idk TODO:
-      cout<<"DOUBLEDOWN"<<endl;
+      cout<<"  DOUBLEDOWN"<<endl;
       me.push_back(_list[cardpos]);
       cardpos++;
       me_sum += me[me.size() - 1];
+
+      cout<<"Me:"<<endl<<"  ";
+      for(auto &i:me)
+        cout<<i<<" ";
+      cout<<endl;
+      cout<<"Dealer:"<<endl<<"  ";
+      for(auto &i:dealer)
+        cout<<i<<" ";
+      cout<<endl;
 
       switch (isWinLoseDraw(me_sum, dealer_sum)) {
       case gamestatus::WIN:
@@ -351,6 +361,15 @@ END: // end of game
 
   if(atr and me_sum+10 <= 21)
     me_sum+=10;
+
+  cout<<"Me:"<<endl<<"  ";
+  for(auto &i:me)
+    cout<<i<<" ";
+  cout<<endl;
+  cout<<"Dealer:"<<endl<<"  ";
+  for(auto &i:dealer)
+    cout<<i<<" ";
+  cout<<endl;
 
   return isWinLoseDraw(me_sum, dealer_sum);
 }
