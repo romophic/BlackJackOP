@@ -73,7 +73,7 @@ void checkBJ(){
   arrayFillRandom(list);
   fixArray(list);
   
-  switch (gameWithDebugLog(list)) {
+  switch (game(list)) {
     case gamestatus::WIN:
       cout<<"result: WIN"<<endl;
       break;
