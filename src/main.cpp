@@ -74,8 +74,8 @@ void checkBJ(){
   arrayFillRandom(list);
   fixArray(list);
   for (auto i : list)
-    cerr<<i<<" ";
-  cerr<<"\n";
+    cout<<i<<" ";
+  cout<<"\n";
 
   switch (game(list)) {
   case gamestatus::WIN:
@@ -123,5 +123,6 @@ void checkBJ(){
 int main(){
   for (int i = 0; i < 100; i++) {
     checkBJ();
+    cout<<"\n";
   }
 }
