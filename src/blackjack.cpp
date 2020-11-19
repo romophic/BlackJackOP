@@ -207,6 +207,16 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
     return gamestatus::LOSE;
 
   while (true) { // Open card is dealer[0]
+    // DEBUG
+    cout<<"ME:";
+    for (auto i : me)
+      cout<<i<<" ";
+    cout << "\n" << "Dealer:";
+    for (auto i : dealer)
+      cout<<i<<" ";
+    cout<<"\n";
+    // END DEBUG
+
     if (_list.size() - 1 < cardpos)
       return gamestatus::ERROR;
 
@@ -225,6 +235,9 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
 
     switch (meshouldcard) {
     case cardstatus::HIT:
+      // DEBUG
+      cout<<"HIT\n";
+      // END DEBUG
       meDraw(me, _list, me_sum, cardpos);
 
       if (me[me.size() - 1] == 1)
@@ -235,9 +248,15 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
       break;
 
     case cardstatus::STAND:
+      // DEBUG
+      cout<<"STAND\n";
+      // END DEBUG
       goto END;
 
     case cardstatus::DOUBLEDOWN: // idk TODO:
+      // DEBUG
+      cout<<"DOUBLEDOWN\n";
+      // END DEBUG
       me.push_back(_list[cardpos]);
       cardpos++;
       me_sum += me[me.size() - 1];
@@ -247,9 +266,15 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
       return isWinLoseDrawInDD(me_sum, dealer_sum);
 
     case cardstatus::SALENDER: // idk TODO:
+      // DEBUG
+      cout<<"SALENDER\n";
+      // END DEBUG
       return gamestatus::SALENDER;
 
     default:
+      // DEBUG
+      cout<<"ERROR\n";
+      // END DEBUG
       return gamestatus::ERROR;
     }
   }
