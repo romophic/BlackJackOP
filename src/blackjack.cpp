@@ -43,7 +43,7 @@ constexpr int chart_first[10][10] = { //first chart
   {1,1,1,1,1,0,0,3,3,3},
   {1,1,1,1,1,1,1,1,1,1}
 };
-constexpr int chart_plusa[8][10] = { //if include ace
+constexpr int chart_firsta[8][10] = { //if include ace
   {0,0,0,2,2,0,0,0,0,0},
   {0,0,0,2,2,0,0,0,0,0},
   {0,0,0,2,2,0,0,0,0,0},
@@ -96,7 +96,7 @@ int getChooseCardFromFirstAce(int _me_sum, int _dealer_opened_card) { // Choose 
   if (_dealer_opened_card == 1)
     _dealer_opened_card = 11;
 
-  return chart_first[_me_sum - 2][_dealer_opened_card - 2];
+  return chart_firsta[_me_sum - 2][_dealer_opened_card - 2];
 }
 int getChooseCardFromSecond(int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
   // EDUCATION to me_sum
@@ -111,7 +111,7 @@ int getChooseCardFromSecond(int _me_sum, int _dealer_opened_card) { // Choose ca
   if (10 <= _dealer_opened_card)
     _dealer_opened_card = 10;
 
-  return chart_first[_me_sum - 11][_dealer_opened_card - 2];
+  return chart_second[_me_sum - 11][_dealer_opened_card - 2];
 }
 int getChooseCardFromSecondAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
   // EDUCATION to me_sum
@@ -126,7 +126,7 @@ int getChooseCardFromSecondAce(int _me_sum, int _dealer_opened_card) { // Choose
   if (_dealer_opened_card == 1)
     _dealer_opened_card = 11;
 
-  return chart_first[_me_sum - 7][_dealer_opened_card - 2];
+  return chart_seconda[_me_sum - 7][_dealer_opened_card - 2];
 }
 
 void meDraw(vector<int> &me,const vector<int> &_list,int &me_sum,int &cardpos) {
