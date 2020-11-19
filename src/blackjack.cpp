@@ -128,6 +128,12 @@ int getChooseCardFromSecondAce(int _me_sum, int _dealer_opened_card) { // Choose
 
   return chart_first[_me_sum - 7][_dealer_opened_card - 2];
 }
+
+void meDraw(vector<int> &me,const vector<int> &_list,int &me_sum,int &cardpos) {
+  me.push_back(_list[cardpos]);
+  cardpos++;
+  me_sum += me[me.size() - 1];
+}
 void dealerDraw(int &dealer_sum,vector<int> &dealer,const vector<int> &_list,int &cardpos) {
   while(dealer_sum < 17){
     dealer.push_back(_list[cardpos]);cardpos++;
@@ -155,6 +161,25 @@ constexpr int isWinLoseDraw(const int me_sum, const int dealer_sum) {
     }
   }
   return gamestatus::ERROR;
+}
+
+constexpr int isWinLoseDrawInDD(const int me_sum, const int dealer_sum) {
+  switch (isWinLoseDraw(me_sum, dealer_sum)) {
+  case gamestatus::WIN:
+    return gamestatus::DOUBLEDOWNTOWIN;
+
+  case gamestatus::LOSE:
+    return gamestatus::DOUBLEDOWNTOLOSE;
+
+  case gamestatus::DRAW:
+    return gamestatus::DOUBLEDOWNTODRAW;
+
+  case gamestatus::ERROR:
+    return gamestatus::ERROR;
+
+  default:
+    return gamestatus::ERROR;
+  }
 }
 
 int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
@@ -221,17 +246,7 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
 
       dealerDraw(dealer_sum, dealer, _list, cardpos);
 
-      switch (isWinLoseDraw(me_sum, dealer_sum)) {
-      case gamestatus::WIN:
-        return gamestatus::DOUBLEDOWNTOWIN;
-      case gamestatus::LOSE:
-        return gamestatus::DOUBLEDOWNTOLOSE;
-      case gamestatus::DRAW:
-        return gamestatus::DOUBLEDOWNTODRAW;
-      default:
-        return gamestatus::ERROR;
-      }
-      break;
+      return isWinLoseDrawInDD(me_sum, dealer_sum);
 
     case cardstatus::SALENDER: // idk TODO:
       return gamestatus::SALENDER;
