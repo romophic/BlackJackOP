@@ -203,7 +203,7 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
   if ((me[0] == 1 or me[1] == 1) and me_sum == 11) // BlackJack!!
     return gamestatus::BLACKJACK;
 
-  if (dealer_sum == 21) // dealer's BlackJack!!
+  if ((dealer[0] == 1 or dealer[1] == 1) and dealer_sum == 11) // dealer's BlackJack!!
     return gamestatus::LOSE;
 
   while (true) { // Open card is dealer[0]
@@ -225,9 +225,8 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
 
     switch (meshouldcard) {
     case cardstatus::HIT:
-      me.push_back(_list[cardpos]);
-      cardpos++;
-      me_sum += me[me.size() - 1];
+      meDraw(me, _list, me_sum, cardpos);
+
       if (me[me.size() - 1] == 1)
         atr = true;
 
@@ -237,7 +236,6 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
 
     case cardstatus::STAND:
       goto END;
-      break;
 
     case cardstatus::DOUBLEDOWN: // idk TODO:
       me.push_back(_list[cardpos]);
