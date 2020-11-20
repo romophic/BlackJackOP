@@ -1,4 +1,3 @@
-//TODO:ブラックジャックの1
 //   ____  _            _       _            _     ___  ____   //
 //  | __ )| | __ _  ___| | __  | | __ _  ___| | __/ _ \|  _ \  //
 //  |  _ \| |/ _` |/ __| |/ /  | |/ _` |/ __| |/ / | | | |_) | //
@@ -142,7 +141,7 @@ void dealerDraw(bool &btr,int &dealer_sum,vector<int> &dealer,const vector<int> 
     if(dealer[dealer.size()-1] == 1){ //さっきひいたやつが1なら
       btr=true;
     }
-    if(dealer_sum < 17 or (btr and dealer_sum+10 <= 21)){
+    if(16 < dealer_sum or (btr and dealer_sum+10 <= 21)){
       break;
     }
   }
@@ -218,10 +217,6 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
 
   if ((dealer[0] == 1 or dealer[1] == 1) and dealer_sum == 11) // dealer's BlackJack!!
     return gamestatus::LOSE;
-
-  // DEBUG
-  cout<<atr<<" "<<btr<<endl;
-  // END DEBUG
 
   while (true) { // Open card is dealer[0]
     // DEBUG
