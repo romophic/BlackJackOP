@@ -1,3 +1,4 @@
+//TODO:ブラックジャックの1
 //   ____  _            _       _            _     ___  ____   //
 //  | __ )| | __ _  ___| | __  | | __ _  ___| | __/ _ \|  _ \  //
 //  |  _ \| |/ _` |/ __| |/ /  | |/ _` |/ __| |/ / | | | |_) | //
@@ -134,10 +135,13 @@ void meDraw(vector<int> &me,const vector<int> &_list,int &me_sum,int &cardpos) {
   cardpos++;
   me_sum += me[me.size() - 1];
 }
-void dealerDraw(int &dealer_sum,vector<int> &dealer,const vector<int> &_list,int &cardpos) {
+void dealerDraw(bool &btr,int &dealer_sum,vector<int> &dealer,const vector<int> &_list,int &cardpos) {
   while(dealer_sum < 17){
     dealer.push_back(_list[cardpos]);cardpos++;
     dealer_sum += dealer[dealer.size() - 1];
+    if(dealer[dealer.size()-1] == 1){ //さっきひいたやつが1なら
+      btr=true;
+    }
   }
 }
 
@@ -186,6 +190,7 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
   int cardpos = 0;                   // point of _list[]
   int me_sum = 0, dealer_sum = 0;    // both player's sum
   bool atr = false;                  // Ace trigger
+  bool btr = false;
   bool firsttr = true;               // First trigger
   int meshouldcard = 0;              // should to do
   vector<int> me, dealer;            // Both hand
@@ -199,6 +204,7 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
   dealer.push_back(_list[cardpos]);cardpos++;
   dealer.push_back(_list[cardpos]);cardpos++;
   dealer_sum = dealer[0] + dealer[1];
+  if(dealer[0] == 1 or dealer[1] == 1) btr=true;
 
   if ((me[0] == 1 or me[1] == 1) and me_sum == 11) // BlackJack!!
     return gamestatus::BLACKJACK;
@@ -261,7 +267,19 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
       cardpos++;
       me_sum += me[me.size() - 1];
 
-      dealerDraw(dealer_sum, dealer, _list, cardpos);
+      dealerDraw(btr,dealer_sum, dealer, _list, cardpos);
+      // DEBUG
+      cout<<"ME:";
+      for (auto i : me)
+        cout<<i<<" ";
+      cout << "\n" << "Dealer:";
+      for (auto i : dealer)
+        cout<<i<<" ";
+      cout<<"\n";
+      // END DEBUG
+      
+      if(atr and me_sum+10 <= 21)
+        me_sum+=10;
 
       return isWinLoseDrawInDD(me_sum, dealer_sum);
 
@@ -280,7 +298,17 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
   }
 END: // end of game
 
-  dealerDraw(dealer_sum, dealer, _list, cardpos);
+  dealerDraw(btr,dealer_sum, dealer, _list, cardpos);
+
+  // DEBUG
+  cout<<"ME:";
+  for (auto i : me)
+    cout<<i<<" ";
+  cout << "\n" << "Dealer:";
+  for (auto i : dealer)
+    cout<<i<<" ";
+  cout<<"\n";
+  // END DEBUG
 
   if(atr and me_sum+10 <= 21)
     me_sum+=10;
