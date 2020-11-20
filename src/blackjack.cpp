@@ -212,6 +212,10 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
   if ((dealer[0] == 1 or dealer[1] == 1) and dealer_sum == 11) // dealer's BlackJack!!
     return gamestatus::LOSE;
 
+  // DEBUG
+  cout<<atr<<" "<<btr<<endl;
+  // END DEBUG
+
   while (true) { // Open card is dealer[0]
     // DEBUG
     cout<<"ME:";
@@ -228,12 +232,12 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
 
     if (firsttr) {
       firsttr = false;
-      if (atr)
+      if (atr and 21-10 >= me_sum)
         meshouldcard = getChooseCardFromFirstAce(me_sum, dealer[0]);
       else
         meshouldcard = getChooseCardFromFirst(me_sum, dealer[0]);
     } else {
-      if (atr)
+      if (atr and 21-10 >= me_sum)
         meshouldcard = getChooseCardFromSecondAce(me_sum, dealer[0]);
       else
         meshouldcard = getChooseCardFromSecond(me_sum, dealer[0]);
