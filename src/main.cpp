@@ -1,39 +1,38 @@
 #include "bjutil.cpp"
 #include "blackjack.cpp"
 #include <iostream>
-#include <boost/multiprecision/cpp_int.hpp>
 
 double getBetMoneyMG(int _gamestatus){
   switch (_gamestatus) {
-    case gamestatus::WIN:
-      return 2;
+  case gamestatus::WIN:
+    return 2;
 
-    case gamestatus::LOSE:
-      return 0;
+  case gamestatus::LOSE:
+    return 0;
 
-    case gamestatus::DRAW:
-      return 0.5;
+  case gamestatus::DRAW:
+    return 0.5;
 
-    case gamestatus::DOUBLEDOWNTOWIN:
-      return 4;
+  case gamestatus::DOUBLEDOWNTOWIN:
+    return 4;
 
-    case gamestatus::DOUBLEDOWNTOLOSE:
-      return 0;
+  case gamestatus::DOUBLEDOWNTOLOSE:
+    return 0;
 
-    case gamestatus::DOUBLEDOWNTODRAW:
-      return 2;
+  case gamestatus::DOUBLEDOWNTODRAW:
+    return 2;
 
-    case gamestatus::SALENDER:
-      return 0.5;
+  case gamestatus::SALENDER:
+    return 0.5;
 
-    case gamestatus::BLACKJACK:
-      return 2.5;
+  case gamestatus::BLACKJACK:
+    return 2.5;
 
-    case gamestatus::ERROR:
-      return -1;
+  case gamestatus::ERROR:
+    return -1;
 
-    default:
-      return -1;
+  default:
+    return -1;
   }
 }
 
@@ -120,9 +119,23 @@ void checkBJ(){
   }
 }
 
+void execution(){
+  vector<int> list = {
+    1,4,1,3,10,2,6,10,10,10,10,5,5,7,2
+  };
+  fixArray(list);
+  for(auto i:list)
+    cout<<i<<" ";
+  cout<<"\n";
+  game(list);
+}
+
 int main(){
-  for (int i = 0; i < 100; i++) {
+  execution();
+  /*
+  for(int i=0;i<100;i++){
     checkBJ();
     cout<<"\n";
   }
+  */
 }
