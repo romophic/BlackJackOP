@@ -68,7 +68,7 @@ constexpr int chart_seconda[3][10] = { // in secon if include ace
   {1,1,1,1,1,1,1,1,1,1}
 };
 
-int getChooseCardFromFirst(int _me_sum, int _dealer_opened_card) { // Choose card from chart_first
+constexpr int getChooseCardFromFirst(int _me_sum, int _dealer_opened_card) { // Choose card from chart_first
   // EDUCATION to me_sum
   if (_me_sum <= 8)
     _me_sum = 8;
@@ -83,7 +83,7 @@ int getChooseCardFromFirst(int _me_sum, int _dealer_opened_card) { // Choose car
 
   return chart_first[_me_sum - 8][_dealer_opened_card - 2];
 }
-int getChooseCardFromFirstAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_plusa
+constexpr int getChooseCardFromFirstAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_plusa
   // EDUCATION to me_sum
   if (_me_sum <= 2)
     _me_sum = 2;
@@ -98,7 +98,7 @@ int getChooseCardFromFirstAce(int _me_sum, int _dealer_opened_card) { // Choose 
 
   return chart_firsta[_me_sum - 2][_dealer_opened_card - 2];
 }
-int getChooseCardFromSecond(int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
+constexpr int getChooseCardFromSecond(int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
   // EDUCATION to me_sum
   if (_me_sum <= 11)
     _me_sum = 11;
@@ -113,7 +113,7 @@ int getChooseCardFromSecond(int _me_sum, int _dealer_opened_card) { // Choose ca
 
   return chart_second[_me_sum - 11][_dealer_opened_card - 2];
 }
-int getChooseCardFromSecondAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
+constexpr int getChooseCardFromSecondAce(int _me_sum, int _dealer_opened_card) { // Choose card from chart_second
   // EDUCATION to me_sum
   if (_me_sum <= 7)
     _me_sum = 7;
@@ -129,12 +129,12 @@ int getChooseCardFromSecondAce(int _me_sum, int _dealer_opened_card) { // Choose
   return chart_seconda[_me_sum - 7][_dealer_opened_card - 2];
 }
 
-void meDraw(vector<int> &me,const vector<int> &_list,int &me_sum,int &cardpos) {
+constexpr void meDraw(vector<int> &me,const vector<int> &_list,int &me_sum,int &cardpos) {
   me.push_back(_list[cardpos]);
   cardpos++;
   me_sum += me[me.size() - 1];
 }
-void dealerDraw(bool &btr,int &dealer_sum,vector<int> &dealer,const vector<int> &_list,int &cardpos) {
+constexpr void dealerDraw(bool &btr,int &dealer_sum,vector<int> &dealer,const vector<int> &_list,int &cardpos) {
   while(true){
     dealer.push_back(_list[cardpos]);cardpos++;
     dealer_sum += dealer[dealer.size() - 1];
