@@ -135,19 +135,15 @@ constexpr void meDraw(vector<int> &me,const vector<int> &_list,int &me_sum,int &
   me_sum += me[me.size() - 1];
 }
 constexpr void dealerDraw(bool &btr,int &dealer_sum,vector<int> &dealer,const vector<int> &_list,int &cardpos) {
-  while(true){
+  while(dealer_sum < 17){
+    if(btr and 16 < dealer_sum+10){
+      break;
+    }
     dealer.push_back(_list[cardpos]);cardpos++;
     dealer_sum += dealer[dealer.size() - 1];
     if(dealer[dealer.size()-1] == 1){ //さっきひいたやつが1なら
       btr=true;
     }
-    if(16 < dealer_sum or (btr and dealer_sum+10 <= 21)){
-      break;
-    }
-  }
-
-  if(btr and dealer_sum+10 <= 21){
-    dealer_sum+=10;
   }
 }
 
