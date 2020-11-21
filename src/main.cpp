@@ -120,22 +120,59 @@ void checkBJ(){
 }
 
 void execution(){
-  vector<int> list = {
-    1,4,1,3,10,2,6,10,10,10,10,5,5,7,2
-  };
+  vector<int> list(15);
+  for(auto &i:list)
+    cin>>i;
   fixArray(list);
   for(auto i:list)
     cout<<i<<" ";
   cout<<"\n";
-  game(list);
+  switch (game(list)) {
+  case gamestatus::WIN:
+    cout<<"result: WIN"<<endl;
+    break;
+
+  case gamestatus::LOSE:
+    cout<<"result: LOSE"<<endl;
+    break;
+
+  case gamestatus::DRAW:
+    cout<<"result: DRAW"<<endl;
+    break;
+
+  case gamestatus::DOUBLEDOWNTOWIN:
+    cout<<"result: DOUBLEDOWNTOWIN"<<endl;
+    break;
+
+  case gamestatus::DOUBLEDOWNTOLOSE:
+    cout<<"result: DOUBLEDOWNTOLOSE"<<endl;
+    break;
+
+  case gamestatus::DOUBLEDOWNTODRAW:
+    cout<<"result: DOUBLEDOWNTODRAW"<<endl;
+    break;
+
+  case gamestatus::SALENDER:
+    cout<<"result: SALENDER"<<endl;
+    break;
+
+  case gamestatus::BLACKJACK:
+    cout<<"result: BLACKJACK"<<endl;
+    break;
+
+  case gamestatus::ERROR:
+    cout<<"result: ERROR"<<endl;
+    break;
+
+  default:
+    cout<<"result: ERROR"<<endl;
+    break;
+  }
 }
 
 int main(){
-  execution();
-  /*
   for(int i=0;i<100;i++){
     checkBJ();
     cout<<"\n";
   }
-  */
 }
