@@ -136,7 +136,7 @@ constexpr void meDraw(vector<int> &me,const vector<int> &_list,int &me_sum,int &
 }
 constexpr void dealerDraw(bool &btr,int &dealer_sum,vector<int> &dealer,const vector<int> &_list,int &cardpos) {
   while(dealer_sum < 17){
-    if(btr and 16 < dealer_sum+10){
+    if(btr and 16 < dealer_sum+10 and dealer_sum+10 <= 21){
       break;
     }
     dealer.push_back(_list[cardpos]);cardpos++;
@@ -149,7 +149,7 @@ constexpr void dealerDraw(bool &btr,int &dealer_sum,vector<int> &dealer,const ve
 
 constexpr int isWinLoseDraw(const int me_sum, const int dealer_sum) {
   if (21 < me_sum and 21 < dealer_sum) {
-    return gamestatus::DRAW;
+    return gamestatus::LOSE;
   } else {
     if (21 < me_sum)
       return gamestatus::LOSE;
@@ -282,6 +282,8 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
       
       if(atr and me_sum+10 <= 21)
         me_sum+=10;
+      if(btr and dealer_sum+10 <= 21)
+        dealer_sum+=10;
 
       return isWinLoseDrawInDD(me_sum, dealer_sum);
 
@@ -314,6 +316,8 @@ END: // end of game
 
   if(atr and me_sum+10 <= 21)
     me_sum+=10;
+  if(btr and dealer_sum+10 <= 21)
+    dealer_sum+=10;
 
   return isWinLoseDraw(me_sum, dealer_sum);
 }
