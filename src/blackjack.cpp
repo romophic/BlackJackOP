@@ -208,6 +208,10 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
   dealer_sum = dealer[0] + dealer[1];
   if(dealer[0] == 1 or dealer[1] == 1) btr=true;
 
+  if(((me[0] == 1 or me[1] == 1) and me_sum == 11) and ((dealer[0] == 1 or dealer[1] == 1) and dealer_sum == 11)){ // Black Draw!!
+    return gamestatus::DRAW;
+  }
+
   if ((me[0] == 1 or me[1] == 1) and me_sum == 11) // BlackJack!!
     return gamestatus::BLACKJACK;
 
@@ -247,7 +251,6 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
       cout<<"HIT\n";
       // END DEBUG
       meDraw(me, _list, me_sum, cardpos);
-
       if (me[me.size() - 1] == 1)
         atr = true;
 
@@ -265,9 +268,9 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
       // DEBUG
       cout<<"DOUBLEDOWN\n";
       // END DEBUG
-      me.push_back(_list[cardpos]);
-      cardpos++;
-      me_sum += me[me.size() - 1];
+      meDraw(me, _list, me_sum, cardpos);
+      if (me[me.size() - 1] == 1)
+        atr = true;
 
       dealerDraw(btr,dealer_sum, dealer, _list, cardpos);
       // DEBUG
@@ -279,7 +282,7 @@ int game(const vector<int> &_list) { // code of kernel (0.0000044s)(0.0044ms)
         cout<<i<<" ";
       cout<<"\n";
       // END DEBUG
-      
+
       if(atr and me_sum+10 <= 21)
         me_sum+=10;
       if(btr and dealer_sum+10 <= 21)
