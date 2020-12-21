@@ -1,19 +1,19 @@
 #include "bjutil.cpp"
 #include "blackjack.cpp"
 #include <iostream>
+#include <unordered_map>
 
-double getBetMoneyMG(int _gamestatus){
+using namespace std; 
+long double getBetMoneyMG(int _gamestatus){
   switch (_gamestatus) {
   case gamestatus::WIN:
     return 2;
 
   case gamestatus::LOSE:
-    return 0;
-
+    return 0; 
   case gamestatus::DRAW:
     return 0.5;
-
-  case gamestatus::DOUBLEDOWNTOWIN:
+case gamestatus::DOUBLEDOWNTOWIN:
     return 4;
 
   case gamestatus::DOUBLEDOWNTOLOSE:
@@ -36,183 +36,60 @@ double getBetMoneyMG(int _gamestatus){
   }
 }
 
-constexpr long defaultmoney=10;
-
-void updateBetMoney(long &_betmoney,int _gameresult){
-  if(_gameresult == gamestatus::LOSE or _gameresult == gamestatus::DOUBLEDOWNTOLOSE or _gameresult == gamestatus::SALENDER){
-    _betmoney = defaultmoney;
-  }else{
-    if(_betmoney == defaultmoney or _betmoney == defaultmoney*2){
-      _betmoney *= 2;
-    }else if(_betmoney == defaultmoney*4){
-      _betmoney = defaultmoney*3;
-    }
-  }
-}
-
-void arrayGaming(void) {
-  long betmoney=defaultmoney;
-  long double paymoney=0;
-  long double getmoney=0;
-
-  cout.precision(10);
-
-  for(int i=0;i<pow(10,6);i++){
-    int gameresult=gameWithRandomList();
-
-    paymoney+=betmoney;
-    getmoney+=betmoney*getBetMoneyMG(gameresult);
-
-    updateBetMoney(betmoney,gameresult);
-  }
-  cout<<paymoney<<" "<<getmoney<<"\n";
-}
-
-void checkBJ(){
-  vector<int> list(15);
-  arrayFillRandom(list);
-  fixArray(list);
-  for (auto i : list)
-    cout<<i<<" ";
-  cout<<"\n";
-
-  switch (game(list)) {
-  case gamestatus::WIN:
-    cout<<"result: WIN"<<endl;
-    break;
-
-  case gamestatus::LOSE:
-    cout<<"result: LOSE"<<endl;
-    break;
-
-  case gamestatus::DRAW:
-    cout<<"result: DRAW"<<endl;
-    break;
-
-  case gamestatus::DOUBLEDOWNTOWIN:
-    cout<<"result: DOUBLEDOWNTOWIN"<<endl;
-    break;
-
-  case gamestatus::DOUBLEDOWNTOLOSE:
-    cout<<"result: DOUBLEDOWNTOLOSE"<<endl;
-    break;
-
-  case gamestatus::DOUBLEDOWNTODRAW:
-    cout<<"result: DOUBLEDOWNTODRAW"<<endl;
-    break;
-
-  case gamestatus::SALENDER:
-    cout<<"result: SALENDER"<<endl;
-    break;
-
-  case gamestatus::BLACKJACK:
-    cout<<"result: BLACKJACK"<<endl;
-    break;
-
-  case gamestatus::ERROR:
-    cout<<"result: ERROR"<<endl;
-    break;
-
-  default:
-    cout<<"result: ERROR"<<endl;
-    break;
-  }
-}
-
-void execution(){
-  vector<int> list(15);
-  for(auto &i:list)
-    cin>>i;
-  fixArray(list);
-  for(auto i:list)
-    cout<<i<<" ";
-  cout<<"\n";
-  switch (game(list)) {
-  case gamestatus::WIN:
-    cout<<"result: WIN"<<endl;
-    break;
-
-  case gamestatus::LOSE:
-    cout<<"result: LOSE"<<endl;
-    break;
-
-  case gamestatus::DRAW:
-    cout<<"result: DRAW"<<endl;
-    break;
-
-  case gamestatus::DOUBLEDOWNTOWIN:
-    cout<<"result: DOUBLEDOWNTOWIN"<<endl;
-    break;
-
-  case gamestatus::DOUBLEDOWNTOLOSE:
-    cout<<"result: DOUBLEDOWNTOLOSE"<<endl;
-    break;
-
-  case gamestatus::DOUBLEDOWNTODRAW:
-    cout<<"result: DOUBLEDOWNTODRAW"<<endl;
-    break;
-
-  case gamestatus::SALENDER:
-    cout<<"result: SALENDER"<<endl;
-    break;
-
-  case gamestatus::BLACKJACK:
-    cout<<"result: BLACKJACK"<<endl;
-    break;
-
-  case gamestatus::ERROR:
-    cout<<"result: ERROR"<<endl;
-    break;
-
-  default:
-    cout<<"result: ERROR"<<endl;
-    break;
-  }
-}
-
 int main(){
-  for (int a = 1; a <= 50; a++) {
-    for (int b = 1; b <= 50; b++) {
-      for (int c = 1; c <= 50; c++) {
-        for (int d = 1; d <= 50; d++) {
-          
-          for(int i=0;i<1000000;i++){
+  auto upPos = [](int &_pos){
+    _pos=min(3,_pos+1);
+  };
+  auto downPos = [](int &_pos){
+    _pos=max(0,_pos-1);
+  };
 
+  vector<int> bets(4,0);
+
+  long double maxgetperbet=0;
+  vector<int> maxarray(4,-1);
+
+  for (bets[0] = 1; bets[0] <= 50; bets[0]++) {
+    for (bets[1] = 1; bets[1] <= 50; bets[1]++) {
+      cout<<bets[0]<<" "<<bets[1]<<"\n";
+      for (bets[2] = 1; bets[2] <= 50; bets[2]++) {
+        for (bets[3] = 1; bets[3] <= 50; bets[3]++) {
+
+          long double getmoney,betmoney;getmoney=betmoney=0;
+          int pos=0;
+          // a b c d
+          // 0 1 2 3
+          
+          for(int i=0;i<2;i++){ // 10^6
+            betmoney+=bets[pos];
+
+            long double result = getBetMoneyMG(gameWithRandomList());
+            if(result == -1){
+              cout<<"something wrong\n";
+              assert(false);
+            }
+
+            getmoney += bets[pos]*result;
+            if(1 < result){ // TODO: is that right?
+              upPos(pos);
+            }else{
+              downPos(pos);
+            }
+          }
+
+          if(getmoney / betmoney > maxgetperbet){
+            maxgetperbet = getmoney / betmoney;
+            maxarray=bets;
           }
 
         }
       }
     }
   }
-  switch (gameWithRandomList()) {
-  case gamestatus::WIN:
-    return 2;
 
-  case gamestatus::LOSE:
-    return 0;
-
-  case gamestatus::DRAW:
-    return 0.5;
-
-  case gamestatus::DOUBLEDOWNTOWIN:
-    return 4;
-
-  case gamestatus::DOUBLEDOWNTOLOSE:
-    return 0;
-
-  case gamestatus::DOUBLEDOWNTODRAW:
-    return 2;
-
-  case gamestatus::SALENDER:
-    return 0.5;
-
-  case gamestatus::BLACKJACK:
-    return 2.5;
-
-  case gamestatus::ERROR:
-    return -1;
-
-  default:
-    return -1;
+  for(auto i:maxarray){
+    cout<<i<<" ";
   }
+  cout<<"\n"<<maxgetperbet<<"\n";
+
 }

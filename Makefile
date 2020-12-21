@@ -4,5 +4,9 @@ INCLUDE=-I /usr/local/include
 build/main: src/main.cpp
 	clang++ src/main.cpp -o build/main $(FLAG) $(INCLUDE)
 
+run:
+	make
+	./build/main
+
 clean:
 	rm -rf build/*
