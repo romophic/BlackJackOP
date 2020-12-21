@@ -171,8 +171,48 @@ void execution(){
 }
 
 int main(){
-  for(int i=0;i<100;i++){
-    checkBJ();
-    cout<<"\n";
+  for (int a = 1; a <= 50; a++) {
+    for (int b = 1; b <= 50; b++) {
+      for (int c = 1; c <= 50; c++) {
+        for (int d = 1; d <= 50; d++) {
+          
+          for(int i=0;i<1000000;i++){
+
+          }
+
+        }
+      }
+    }
+  }
+  switch (gameWithRandomList()) {
+  case gamestatus::WIN:
+    return 2;
+
+  case gamestatus::LOSE:
+    return 0;
+
+  case gamestatus::DRAW:
+    return 0.5;
+
+  case gamestatus::DOUBLEDOWNTOWIN:
+    return 4;
+
+  case gamestatus::DOUBLEDOWNTOLOSE:
+    return 0;
+
+  case gamestatus::DOUBLEDOWNTODRAW:
+    return 2;
+
+  case gamestatus::SALENDER:
+    return 0.5;
+
+  case gamestatus::BLACKJACK:
+    return 2.5;
+
+  case gamestatus::ERROR:
+    return -1;
+
+  default:
+    return -1;
   }
 }
