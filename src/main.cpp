@@ -68,7 +68,7 @@ void f(vector<int> _bets,long double &_maxgetperbet,vector<int> &_maxarray){
   // a b c d
   // 0 1 2 3
 
-  for(int i=0;i<100000;i++){ // 10^6
+  for(int i=0;i<10000;i++){ // 10^5
     betmoney+=_bets[pos];
 
     long double result = getBetMoneyMG(betmoney,_bets[pos]);
@@ -93,7 +93,18 @@ void f(vector<int> _bets,long double &_maxgetperbet,vector<int> &_maxarray){
   }
 }
 
+void playGround(){
+  vector<int> bets = {4,6,2,48};
+  long double maxgetperbet=0;
+  vector<int> maxarray(4,0);
+
+  f(bets,maxgetperbet,maxarray);
+  cout<<maxgetperbet<<"\n";
+}
+
 int main(){
+  playGround();
+  /*
   long double maxgetperbet=0;
   vector<int> maxarray(4,-1);
   vector<int> bets(4,0);
@@ -127,5 +138,5 @@ int main(){
     cout<<i<<" ";
   }
   cout<<"\n"<<maxgetperbet<<"\n";
-
+ */
 }
