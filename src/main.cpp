@@ -10,6 +10,7 @@ std::uniform_int_distribution<int> distforper(1, 10000000);
 //10^7
 
 namespace per{
+  //sum = 1
   constexpr long double WIN    = 0.32531629;
   constexpr long double LOSE   = 0.41007484;
   constexpr long double DRAW   = 0.07719535;
@@ -103,7 +104,7 @@ void playGround(){
 }
 
 int main(){
-  playGround();
+  //playGround();
   /*
   long double maxgetperbet=0;
   vector<int> maxarray(4,-1);
