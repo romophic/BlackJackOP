@@ -6,7 +6,7 @@
 
 using namespace std;
 
-vector<int> result(8,0);
+vector<int> result(9,0);
 mutex mtx_result;
 mutex mtx_persent;
 
