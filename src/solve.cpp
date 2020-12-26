@@ -8,11 +8,12 @@ using namespace std;
 
 int main(){
   int limit = pow(10,8);
+  int cores = thread::hardware_concurrency();
 
   vector<thread> tasks;
   
-  for(int i=0;i<4;i++){
-    tasks.emplace_back(thread(threadGaming,int(limit/4),i));
+  for(int i=0;i<cores;i++){
+    tasks.emplace_back(thread(threadGaming,limit/cores,i));
   }
 
   for(auto &i:tasks){
