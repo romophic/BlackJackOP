@@ -17,15 +17,6 @@ void putArrayNums(const vector<int> &_list, const string _str) { // put array
   cout << "\n";
 }
 
-void putLogo(){
-  const string logo[] = {
-    #include "logo.txt"
-  };
-  for(const auto &i:logo){
-    cout<<i<<"\n";
-  }
-}
-
 void arrayFillRandom(vector<int> &_list) { // fill array random num (1 ~ 13)
   vector<int> cnt(13, 0);
   for (int i = 0; i < _list.size();) {
