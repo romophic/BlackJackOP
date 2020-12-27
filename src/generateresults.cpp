@@ -1,5 +1,5 @@
-#pragma once
 #include "bjutil.cpp"
+#include <thread>
 #include <vector>
 #include <iostream>
 #include <mutex>
@@ -81,5 +81,24 @@ void threadGaming(int _n,int _threadnum) {
       mtx_result.unlock();
       break;
     }
+  }
+}
+
+int main(){
+  int limit = pow(10,8);
+  int cores = thread::hardware_concurrency();
+
+  vector<thread> tasks;
+  
+  for(int i=0;i<cores;i++){
+    tasks.emplace_back(thread(threadGaming,limit/cores,i));
+  }
+
+  for(auto &i:tasks){
+    i.join();
+  }
+
+  for(int i:result){
+    cout<<i<<" ";
   }
 }
