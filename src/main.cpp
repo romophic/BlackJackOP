@@ -1,3 +1,4 @@
+#include "generateresults.cpp"
 #include "bjutil.cpp"
 #include <iostream>
 #include <thread>
@@ -5,64 +6,54 @@
 #include <mutex>
 #include <deque>
 
-std::mt19937 mtforper{std::random_device{}()};
-std::uniform_int_distribution<int> distforper(1, 10000000);
-//10^7
-
-namespace per{
-  //sum = 1
-  constexpr long double WIN    = 0.32531629;
-  constexpr long double LOSE   = 0.41007484;
-  constexpr long double DRAW   = 0.07719535;
-  constexpr long double DDWIN  = 0.05256743;
-  constexpr long double DDLOSE = 0.03678966;
-  constexpr long double DDDRAW = 0.00662317;
-  constexpr long double SLDR   = 0.04680537;
-  constexpr long double BJ     = 0.04462789;
-}
-
 using namespace std; 
-long double getBetMoneyMG(long double &_betmoney,const int _affectmoney){
-  long double per = distforper(mtforper)/static_cast<long double>(10000000);
 
-  using namespace per;
-
-  if      (per <= (WIN)){ //WIN
+long double getBetMoneyMGByArray(long double &_betmoney,const int _affectmoney,const int pos){
+  switch (resultarray[pos]) {
+  case gamestatus::WIN:
     return 2;
-  }else if(per <= (WIN)+(LOSE)){ //LOSE
+
+  case gamestatus::LOSE:
     return 0;
-  }else if(per <= (WIN)+(LOSE)+(DRAW)){ //DRAW
+
+  case gamestatus::DRAW:
     return 1;
-  }else if(per <= (WIN)+(LOSE)+(DRAW)+(DDWIN)){//DDWIN
+
+  case gamestatus::DOUBLEDOWNTOWIN:
     _betmoney+=_affectmoney;
     return 4;
-  }else if(per <= (WIN)+(LOSE)+(DRAW)+(DDWIN)+(DDLOSE)){//DDLOSE
+
+  case gamestatus::DOUBLEDOWNTOLOSE:
     _betmoney+=_affectmoney;
     return 0;
-  }else if(per <= (WIN)+(LOSE)+(DRAW)+(DDWIN)+(DDLOSE)+(DDDRAW)){//DDDRAW
+
+  case gamestatus::DOUBLEDOWNTODRAW:
     _betmoney+=_affectmoney;
     return 2;
-  }else if(per <= (WIN)+(LOSE)+(DRAW)+(DDWIN)+(DDLOSE)+(DDDRAW)+(SLDR)){//SLDR
-    return 0.5;
-  }else if(per <= (WIN)+(LOSE)+(DRAW)+(DDWIN)+(DDLOSE)+(DDDRAW)+(SLDR)+(BJ)){//BJ
-    return 2.5;
-  }
 
+  case gamestatus::SALENDER:
+    return 0.5;
+
+  case gamestatus::BLACKJACK:
+    return 2.5;
+
+  case gamestatus::ERROR:
+    return -1;
+
+  default:
+    return -1;
+  }
   return -1;
 }
 
-
 void upPos(int &_pos){
   _pos=min(3,_pos+1);
-  return;
 }
 void downPos(int &_pos){
   _pos=max(0,_pos-1);
-  return;
 }
 
-mutex mtx;
-
+mutex mtx_f;
 void f(vector<int> _bets,long double &_maxgetperbet,vector<int> &_maxarray){
   long double getmoney,betmoney;getmoney=betmoney=0;
   int pos=0;
@@ -72,7 +63,7 @@ void f(vector<int> _bets,long double &_maxgetperbet,vector<int> &_maxarray){
   for(int i=0;i<10000;i++){ // 10^5
     betmoney+=_bets[pos];
 
-    long double result = getBetMoneyMG(betmoney,_bets[pos]);
+    long double result = getBetMoneyMGByArray(betmoney,_bets[pos],i);
     if(result == -1){
       cout<<"something wrong\n";
       assert(false);
@@ -81,31 +72,24 @@ void f(vector<int> _bets,long double &_maxgetperbet,vector<int> &_maxarray){
     getmoney += _bets[pos]*result;
     if(1 < result){ // TODO: is that right?
       upPos(pos);
-    }else{
+    }else if(result < 1){
       downPos(pos);
     }
   }
 
   if(getmoney / betmoney > _maxgetperbet){
-    mtx.lock();
+    mtx_f.lock();
     _maxgetperbet = getmoney / betmoney;
     _maxarray=_bets;
-    mtx.unlock();
+    mtx_f.unlock();
   }
 }
 
-void playGround(){
-  vector<int> bets = {4,6,2,48};
-  long double maxgetperbet=0;
-  vector<int> maxarray(4,0);
-
-  f(bets,maxgetperbet,maxarray);
-  cout<<maxgetperbet<<"\n";
-}
-
 int main(){
-  //playGround();
-  /*
+  cout<<"make results...\n";
+  makeResult();
+  cout<<"Done!\n";
+
   long double maxgetperbet=0;
   vector<int> maxarray(4,-1);
   vector<int> bets(4,0);
@@ -119,25 +103,30 @@ int main(){
       cout<<bets[0]<<" "<<bets[1]<<" "<<bets[2]<<" "<<bets[3]<<"\n";
       for (bets[2] = 1; bets[2] <= 50; bets[2]++) {
         for (bets[3] = 1; bets[3] <= 50; bets[3]++) {
+          if(tasks.size()/2 == thread::hardware_concurrency()){
+            tasks[tasks.size()-1].join();
+            tasks.erase(prev(tasks.end(),1));
+          }
           tasks.emplace_front(thread(f,bets,ref(maxgetperbet),ref(maxarray)));
         }
       }
-    for(auto &i:tasks){
-      i.join();
-    }
-    tasks.clear();
     }
   }
   cout<<"complete\n";
 
   cout<<"wait tasks\n";
-  for(auto &i:tasks){
+  for(auto &i:tasks)
     i.join();
-  }
 
-  for(auto i:maxarray){
+  cout<<"result:\n";
+  for(auto i:maxarray)
     cout<<i<<" ";
-  }
   cout<<"\n"<<maxgetperbet<<"\n";
- */
+
+  cout<<"writting array...\n";
+  ofstream of("array.csv");
+  for(int i=0;i<resultarray.size()-1;i++)
+    of<<resultarray[i]<<",";
+  of<<resultarray[resultarray.size()-1];
+  cout<<"All Done!!!\n";
 }
