@@ -3,10 +3,13 @@
 #include <vector>
 #include <iostream>
 #include <mutex>
+#include <fstream>
+#include <cassert>
 
 using namespace std;
 
-vector<int> result(9,0);
+vector<int> sumofresult(9, 0);
+vector<int> resultarray;
 mutex mtx_result;
 mutex mtx_persent;
 
@@ -23,82 +26,88 @@ void threadGaming(int _n,int _threadnum) {
     switch (gameWithRandomList()) {
     case gamestatus::WIN:
       mtx_result.lock();
-      result[0]++;
+      sumofresult[0]++;
+      resultarray.push_back(gamestatus::WIN);
       mtx_result.unlock();
       break;
 
     case gamestatus::LOSE:
       mtx_result.lock();
-      result[1]++;
+      sumofresult[1]++;
+      resultarray.push_back(gamestatus::LOSE);
       mtx_result.unlock();
       break;
 
     case gamestatus::DRAW:
       mtx_result.lock();
-      result[2]++;
+      sumofresult[2]++;
+      resultarray.push_back(gamestatus::DRAW);
       mtx_result.unlock();
       break;
 
     case gamestatus::DOUBLEDOWNTOWIN:
       mtx_result.lock();
-      result[3]++;
+      sumofresult[3]++;
+      resultarray.push_back(gamestatus::DOUBLEDOWNTOWIN);
       mtx_result.unlock();
       break;
 
     case gamestatus::DOUBLEDOWNTOLOSE:
       mtx_result.lock();
-      result[4]++;
+      sumofresult[4]++;
+      resultarray.push_back(gamestatus::DOUBLEDOWNTOLOSE);
       mtx_result.unlock();
       break;
 
     case gamestatus::DOUBLEDOWNTODRAW:
       mtx_result.lock();
-      result[5]++;
+      sumofresult[5]++;
+      resultarray.push_back(gamestatus::DOUBLEDOWNTODRAW);
       mtx_result.unlock();
       break;
 
     case gamestatus::SALENDER:
       mtx_result.lock();
-      result[6]++;
+      sumofresult[6]++;
+      resultarray.push_back(gamestatus::SALENDER);
       mtx_result.unlock();
       break;
 
     case gamestatus::BLACKJACK:
       mtx_result.lock();
-      result[7]++;
+      sumofresult[7]++;
+      resultarray.push_back(gamestatus::BLACKJACK);
       mtx_result.unlock();
       break;
 
     case gamestatus::ERROR:
       mtx_result.lock();
-      result[8]++;
+      sumofresult[8]++;
+      resultarray.push_back(gamestatus::ERROR);
       mtx_result.unlock();
+      assert(false);
       break;
 
     default:
       mtx_result.lock();
-      result[8]++;
+      sumofresult[8]++;
+      resultarray.push_back(gamestatus::ERROR);
       mtx_result.unlock();
+      assert(false);
       break;
     }
   }
 }
 
-int main(){
-  int limit = pow(10,8);
+void makeResult(){ //result of 10^5
+  int limit = pow(10,5);
   int cores = thread::hardware_concurrency();
 
   vector<thread> tasks;
   
-  for(int i=0;i<cores;i++){
+  for(int i=0;i<cores;i++)
     tasks.emplace_back(thread(threadGaming,limit/cores,i));
-  }
 
-  for(auto &i:tasks){
+  for(auto &i:tasks)
     i.join();
-  }
-
-  for(int i:result){
-    cout<<i<<" ";
-  }
 }
