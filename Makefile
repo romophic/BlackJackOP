@@ -1,5 +1,4 @@
 FLAG=-std=c++17 -O3 -g -pthread
-INCLUDE=-I /usr/local/include
 
 build/main: src/main.cpp
 	-mkdir build
