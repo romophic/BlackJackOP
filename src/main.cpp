@@ -2,12 +2,15 @@
 
 #include "genresult_fromper.cpp"
 #include "constvars.cpp"
+#include "putlogo.cpp"
 #include <iostream>
+#include <ostream>
 #include <thread>
 #include <cassert>
 #include <mutex>
 #include <deque>
 #include <fstream>
+#include <iomanip>
 
 using namespace std; 
 
@@ -26,7 +29,7 @@ void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_max
   // 0 1 2 3
 
   for(int i=0;i<gamelimit;i++){ // 10^5
-    if(mymoney < 0)
+    if(0 > mymoney)
       return;
 
     switch (resultarray[i]) {
@@ -91,6 +94,8 @@ void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_max
 }
 
 int main(){
+  putLogo();
+
   cout<<"make results...\n";
   makeResult();
   cout<<"Done!\n";
@@ -104,7 +109,12 @@ int main(){
   cout<<"max thread: "<<thread::hardware_concurrency()<<"\n";
   cout<<"making tasks... "<<flush;
 
+  cout<<"configure:\n";
+  cout<<"  gamelimit: "<<gamelimit<<"\n";
+  cout<<"  handmoney: "<<handmoney<<"\n";
+
   for (bets[0] = 2; bets[0] <= 100; bets[0]+=2) {
+    cout<<"\e[0G"<<"execute: "<<(bets[0]-2)+((bets[1]-2)/50.0)<<"%"<<" max value: "<<maxgetmoney<<flush;
     for (bets[1] = 2; bets[1] <= 100; bets[1]+=2) {
       for (bets[2] = 2; bets[2] <= 100; bets[2]+=2) {
         for (bets[3] = 2; bets[3] <= 100; bets[3]+=2) {
@@ -115,9 +125,6 @@ int main(){
       for(auto &i:tasks)
         i.join();
       tasks.clear();
-
-      cout<<bets[0]<<" "<<bets[1]<<"\n";
-
     }
   }
 
