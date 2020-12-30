@@ -34,19 +34,19 @@ namespace {
     if      (per <= (WIN)){ //WIN
       return gamestatus::WIN;
     }else if(per <= (WIN)+(LOSE)){ //LOSE
-      return gamestatus::WIN;
+      return gamestatus::LOSE;
     }else if(per <= (WIN)+(LOSE)+(DRAW)){ //DRAW
-      return gamestatus::WIN;
+      return gamestatus::DRAW;
     }else if(per <= (WIN)+(LOSE)+(DRAW)+(DDWIN)){//DDWIN
-      return gamestatus::WIN;
+      return gamestatus::DOUBLEDOWNTOWIN;
     }else if(per <= (WIN)+(LOSE)+(DRAW)+(DDWIN)+(DDLOSE)){//DDLOSE
-      return gamestatus::WIN;
+      return gamestatus::DOUBLEDOWNTOLOSE;
     }else if(per <= (WIN)+(LOSE)+(DRAW)+(DDWIN)+(DDLOSE)+(DDDRAW)){//DDDRAW
-      return gamestatus::WIN;
+      return gamestatus::DOUBLEDOWNTODRAW;
     }else if(per <= (WIN)+(LOSE)+(DRAW)+(DDWIN)+(DDLOSE)+(DDDRAW)+(SLDR)){//SLDR
-      return gamestatus::WIN;
+      return gamestatus::SALENDER;
     }else if(per <= (WIN)+(LOSE)+(DRAW)+(DDWIN)+(DDLOSE)+(DDDRAW)+(SLDR)+(BJ)){//BJ
-      return gamestatus::WIN;
+      return gamestatus::BLACKJACK;
     }
 
     assert(false);
