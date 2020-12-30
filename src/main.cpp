@@ -94,6 +94,9 @@ void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_max
 }
 
 int main(){
+  //fix format
+  cout<<fixed<<setprecision(10);
+
   putLogo();
 
   cout<<"make results...\n";
@@ -101,20 +104,22 @@ int main(){
   cout<<"Done!\n";
 
   long double maxgetmoney=0;
-  vector<int> maxarray(4,-1); //write by persent(%) ex(100 -> 100%)
+  vector<int> maxarray(4,0); //write by persent(%) ex(100 -> 100%)
   vector<int> bets(4,0); // 2% ~ 100% between 2% 
 
   deque<thread> tasks; // for runnning solver
 
   cout<<"max thread: "<<thread::hardware_concurrency()<<"\n";
-  cout<<"making tasks... "<<flush;
+  cout<<"making tasks... \n";
 
   cout<<"configure:\n";
-  cout<<"  gamelimit: "<<gamelimit<<"\n";
-  cout<<"  handmoney: "<<handmoney<<"\n";
+  cout<<"  gamelimit: \e[32m"<<gamelimit<<"\e[0m\n";
+  cout<<"  handmoney: \e[32m"<<handmoney<<"\e[0m\n";
 
   for (bets[0] = 2; bets[0] <= 100; bets[0]+=2) {
-    cout<<"\e[0G"<<"execute: "<<(bets[0]-2)+((bets[1]-2)/50.0)<<"%"<<" max value: "<<maxgetmoney<<flush;
+    cout<<"\e[0G"<<"execute: \e[31m"<<(bets[0]-2)+((bets[1]-2)/50.0)<<"\e[0m%"<<" max value: \e[35m"<<maxgetmoney<<"\e[0m at \e[36m"
+        <<"["<<maxarray[0]<<","<<maxarray[1]<<","<<maxarray[2]<<","<<maxarray[3]<<"]\e[0m"<<flush;
+
     for (bets[1] = 2; bets[1] <= 100; bets[1]+=2) {
       for (bets[2] = 2; bets[2] <= 100; bets[2]+=2) {
         for (bets[3] = 2; bets[3] <= 100; bets[3]+=2) {
