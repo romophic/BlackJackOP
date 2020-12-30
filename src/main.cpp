@@ -1,50 +1,15 @@
-#include "generateresults.cpp"
-#include "bjutil.cpp"
+// Need resultarray (in gameresult write by gamestatus::*)
+
+#include "genresult_fromper.cpp"
+#include "constvars.cpp"
 #include <iostream>
 #include <thread>
 #include <cassert>
 #include <mutex>
 #include <deque>
+#include <fstream>
 
 using namespace std; 
-
-long double getBetMoneyMGByArray(long double &_betmoney,const int _affectmoney,const int pos){
-  switch (resultarray[pos]) {
-  case gamestatus::WIN:
-    return 2;
-
-  case gamestatus::LOSE:
-    return 0;
-
-  case gamestatus::DRAW:
-    return 1;
-
-  case gamestatus::DOUBLEDOWNTOWIN:
-    _betmoney+=_affectmoney;
-    return 4;
-
-  case gamestatus::DOUBLEDOWNTOLOSE:
-    _betmoney+=_affectmoney;
-    return 0;
-
-  case gamestatus::DOUBLEDOWNTODRAW:
-    _betmoney+=_affectmoney;
-    return 2;
-
-  case gamestatus::SALENDER:
-    return 0.5;
-
-  case gamestatus::BLACKJACK:
-    return 2.5;
-
-  case gamestatus::ERROR:
-    return -1;
-
-  default:
-    return -1;
-  }
-  return -1;
-}
 
 void upPos(int &_pos){
   _pos=min(3,_pos+1);
@@ -54,35 +19,75 @@ void downPos(int &_pos){
 }
 
 mutex mtx_f;
-void f(vector<int> _bets,long double &_maxgetperbet,vector<int> &_maxarray){
-  long double getmoney,betmoney;getmoney=betmoney=0;
+void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_maxarray){
+  long double mymoney = handmoney;
   int pos=0;
   // a b c d
   // 0 1 2 3
 
-  for(int i=0;i<10000;i++){ // 10^5
-    betmoney+=_bets[pos];
+  for(int i=0;i<gamelimit;i++){ // 10^5
+    if(mymoney < 0)
+      return;
 
-    long double result = getBetMoneyMGByArray(betmoney,_bets[pos],i);
-    if(result == -1){
-      cout<<"something wrong\n";
-      assert(false);
-    }
-
-    getmoney += _bets[pos]*result;
-    if(1 < result){ // TODO: is that right?
+    switch (resultarray[i]) {
+    /*
+     * (mymoney*_bets[pos]/100.0) means "How many bet"
+     */
+    case gamestatus::WIN:
+      mymoney += (mymoney*_bets[pos]/100.0);
       upPos(pos);
-    }else if(result < 1){
+      break;
+
+    case gamestatus::LOSE:
+      mymoney -= (mymoney*_bets[pos]/100.0);
       downPos(pos);
+      break;
+
+    case gamestatus::DRAW:
+      break;
+
+    case gamestatus::DOUBLEDOWNTOWIN:
+      mymoney += (mymoney*_bets[pos]/100.0)*2;
+      upPos(pos);
+      break;
+
+    case gamestatus::DOUBLEDOWNTOLOSE:
+      mymoney -= (mymoney*_bets[pos]/100.0)*2;
+      downPos(pos);
+      break;
+
+    case gamestatus::DOUBLEDOWNTODRAW:
+      mymoney += (mymoney*_bets[pos]/100.0);
+      break;
+
+    case gamestatus::SALENDER:
+      mymoney -= (mymoney*_bets[pos]/100.0)*0.5;
+      downPos(pos);
+      break;
+
+    case gamestatus::BLACKJACK:
+      mymoney += (mymoney*_bets[pos]/100.0)*1.5; //TODO:
+      upPos(pos);
+      break;
+
+    case gamestatus::ERROR:
+      assert(false);
+      break;
+
+    default:
+      assert(false);
+      break;
     }
   }
 
-  if(getmoney / betmoney > _maxgetperbet){
+  if(mymoney > _maxgetmoney){
     mtx_f.lock();
-    _maxgetperbet = getmoney / betmoney;
+    _maxgetmoney = mymoney;
     _maxarray=_bets;
     mtx_f.unlock();
   }
+
+  return;
 }
 
 int main(){
@@ -90,28 +95,32 @@ int main(){
   makeResult();
   cout<<"Done!\n";
 
-  long double maxgetperbet=0;
-  vector<int> maxarray(4,-1);
-  vector<int> bets(4,0);
+  long double maxgetmoney=0;
+  vector<int> maxarray(4,-1); //write by persent(%) ex(100 -> 100%)
+  vector<int> bets(4,0); // 2% ~ 100% between 2% 
 
-  deque<thread> tasks;
+  deque<thread> tasks; // for runnning solver
 
   cout<<"max thread: "<<thread::hardware_concurrency()<<"\n";
   cout<<"making tasks... "<<flush;
-  for (bets[0] = 1; bets[0] <= 50; bets[0]++) {
-    for (bets[1] = 1; bets[1] <= 50; bets[1]++) {
-      cout<<bets[0]<<" "<<bets[1]<<" "<<bets[2]<<" "<<bets[3]<<"\n";
-      for (bets[2] = 1; bets[2] <= 50; bets[2]++) {
-        for (bets[3] = 1; bets[3] <= 50; bets[3]++) {
-          if(tasks.size()/2 == thread::hardware_concurrency()){
-            tasks[tasks.size()-1].join();
-            tasks.erase(prev(tasks.end(),1));
-          }
-          tasks.emplace_front(thread(f,bets,ref(maxgetperbet),ref(maxarray)));
+
+  for (bets[0] = 2; bets[0] <= 100; bets[0]+=2) {
+    for (bets[1] = 2; bets[1] <= 100; bets[1]+=2) {
+      for (bets[2] = 2; bets[2] <= 100; bets[2]+=2) {
+        for (bets[3] = 2; bets[3] <= 100; bets[3]+=2) {
+          tasks.emplace_front(thread(gameWithArray,bets,ref(maxgetmoney),ref(maxarray)));
         }
       }
+
+      for(auto &i:tasks)
+        i.join();
+      tasks.clear();
+
+      cout<<bets[0]<<" "<<bets[1]<<"\n";
+
     }
   }
+
   cout<<"complete\n";
 
   cout<<"wait tasks\n";
@@ -121,7 +130,7 @@ int main(){
   cout<<"result:\n";
   for(auto i:maxarray)
     cout<<i<<" ";
-  cout<<"\n"<<maxgetperbet<<"\n";
+  cout<<"\n"<<maxgetmoney<<"\n";
 
   cout<<"writting array...\n";
   ofstream of("array.csv");
