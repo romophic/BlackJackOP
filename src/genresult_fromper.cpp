@@ -55,6 +55,8 @@ namespace {
 }//end of namespace
 
 void makeResult(){ // result of gamelimit from bjutil
+  resultarray.clear();
+
   for(int i=0;i<gamelimit;i++){
     resultarray.emplace_back(getGameStatusFromPer());
   }

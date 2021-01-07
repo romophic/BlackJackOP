@@ -95,6 +95,7 @@ namespace {
 
 void makeResult(){ //result of gamelimit from bjutil
   int cores = thread::hardware_concurrency();
+  resultarray.clear();
 
   vector<thread> tasks;
   
