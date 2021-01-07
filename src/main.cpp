@@ -94,9 +94,6 @@ int main(){
 
   putLogo();
 
-  cout<<"make results...\n";
-  cout<<"Done!\n";
-
   long double maxgetmoney=0;
   vector<int> maxarray(4,0); //write by persent(%) ex(100 -> 100%)
   vector<vector<int>> bets = {
@@ -108,10 +105,21 @@ int main(){
     {2,4,6,10}
   };
 
-  for(auto &i:bets){
+  cout<<"Bets:\n";
+  for(auto i:bets){
+    cout<<"  ";
+    for(auto j:i){
+      cout<<j<<" ";
+    }
+    cout<<"\n";
+  }
+
+  ofstream resultfile("result.csv");
+
+  for(auto &bet:bets){
     for(int c=0;c<10000;c++){
       makeResult();
-      gameWithArray(i,maxgetmoney,maxarray);
+      gameWithArray(bet,maxgetmoney,maxarray);
     }
     //clear nari
     for(int i=nari.size()-1;;i--){
@@ -122,9 +130,9 @@ int main(){
     }
 
     for(auto i:nari){
-      cout<<i<<",";
+      resultfile<<i<<",";
     }
-    cout<<"\n";
+    resultfile<<"\n";
 
     nari.clear();
     nari.resize(100000,0);
