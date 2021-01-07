@@ -22,6 +22,7 @@ void downPos(int &_pos){
 }
 
 mutex mtx_f;
+vector<int> nari(100000,0);
 void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_maxarray){
   long double mymoney = handmoney;
   int pos=0;
@@ -37,12 +38,12 @@ void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_max
      * (mymoney*_bets[pos]/100.0) means "How many bet"
      */
     case gamestatus::WIN:
-      mymoney += (mymoney*_bets[pos]/100.0);
+      mymoney += _bets[pos];
       upPos(pos);
       break;
 
     case gamestatus::LOSE:
-      mymoney -= (mymoney*_bets[pos]/100.0);
+      mymoney -= _bets[pos];
       downPos(pos);
       break;
 
@@ -50,26 +51,25 @@ void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_max
       break;
 
     case gamestatus::DOUBLEDOWNTOWIN:
-      mymoney += (mymoney*_bets[pos]/100.0)*2;
+      mymoney += _bets[pos]*2;
       upPos(pos);
       break;
 
     case gamestatus::DOUBLEDOWNTOLOSE:
-      mymoney -= (mymoney*_bets[pos]/100.0)*2;
+      mymoney -= _bets[pos]*2;
       downPos(pos);
       break;
 
     case gamestatus::DOUBLEDOWNTODRAW:
-      mymoney += (mymoney*_bets[pos]/100.0);
       break;
 
     case gamestatus::SALENDER:
-      mymoney -= (mymoney*_bets[pos]/100.0)*0.5;
+      mymoney -= _bets[pos]*0.5;
       downPos(pos);
       break;
 
     case gamestatus::BLACKJACK:
-      mymoney += (mymoney*_bets[pos]/100.0)*1.5; //TODO:
+      mymoney += _bets[pos]*1.5;
       upPos(pos);
       break;
 
@@ -83,12 +83,7 @@ void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_max
     }
   }
 
-  if(mymoney > _maxgetmoney){
-    mtx_f.lock();
-    _maxgetmoney = mymoney;
-    _maxarray=_bets;
-    mtx_f.unlock();
-  }
+  nari[floor(mymoney)]++;
 
   return;
 }
@@ -100,54 +95,39 @@ int main(){
   putLogo();
 
   cout<<"make results...\n";
-  makeResult();
   cout<<"Done!\n";
 
   long double maxgetmoney=0;
   vector<int> maxarray(4,0); //write by persent(%) ex(100 -> 100%)
-  vector<int> bets(4,0); // 2% ~ 100% between 2% 
+  vector<vector<int>> bets = {
+    {1,2,3,5},
+    {1,3,2,6},
+    {1,1,1,1},
+    {10,10,10,10},
+    {1,2,4,8},
+    {2,4,6,10}
+  };
 
-  deque<thread> tasks; // for runnning solver
-
-  cout<<"max thread: "<<thread::hardware_concurrency()<<"\n";
-  cout<<"making tasks... \n";
-
-  cout<<"configure:\n";
-  cout<<"  gamelimit: \e[32m"<<gamelimit<<"\e[0m\n";
-  cout<<"  handmoney: \e[32m"<<handmoney<<"\e[0m\n";
-
-  for (bets[0] = 2; bets[0] <= 100; bets[0]+=2) {
-    cout<<"\e[0G"<<"execute: \e[31m"<<(bets[0]-2)+((bets[1]-2)/50.0)<<"\e[0m%"<<" max value: \e[35m"<<maxgetmoney<<"\e[0m at \e[36m"
-        <<"["<<maxarray[0]<<","<<maxarray[1]<<","<<maxarray[2]<<","<<maxarray[3]<<"]\e[0m"<<flush;
-
-    for (bets[1] = 2; bets[1] <= 100; bets[1]+=2) {
-      for (bets[2] = 2; bets[2] <= 100; bets[2]+=2) {
-        for (bets[3] = 2; bets[3] <= 100; bets[3]+=2) {
-          tasks.emplace_front(thread(gameWithArray,bets,ref(maxgetmoney),ref(maxarray)));
-        }
-      }
-
-      for(auto &i:tasks)
-        i.join();
-      tasks.clear();
+  for(auto &i:bets){
+    for(int c=0;c<10000;c++){
+      makeResult();
+      gameWithArray(i,maxgetmoney,maxarray);
     }
+    //clear nari
+    for(int i=nari.size()-1;;i--){
+      if(nari[i] == 0)
+        nari.pop_back();
+      else
+        break;
+    }
+
+    for(auto i:nari){
+      cout<<i<<",";
+    }
+    cout<<"\n";
+
+    nari.clear();
+    nari.resize(100000,0);
   }
 
-  cout<<"complete\n";
-
-  cout<<"wait tasks\n";
-  for(auto &i:tasks)
-    i.join();
-
-  cout<<"result:\n";
-  for(auto i:maxarray)
-    cout<<i<<" ";
-  cout<<"\n"<<maxgetmoney<<"\n";
-
-  cout<<"writting array...\n";
-  ofstream of("array.csv");
-  for(int i=0;i<resultarray.size()-1;i++)
-    of<<resultarray[i]<<",";
-  of<<resultarray[resultarray.size()-1];
-  cout<<"All Done!!!\n";
 }
