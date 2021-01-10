@@ -3,6 +3,7 @@
 #include "genresult_fromper.cpp"
 #include "constvars.cpp"
 #include "putlogo.cpp"
+#include "putstlclass.cpp"
 #include <iostream>
 #include <ostream>
 #include <thread>
@@ -22,7 +23,7 @@ void downPos(int &_pos){
 }
 
 mutex mtx_f;
-vector<int> nari(100000,0);
+deque<pair<int,int>> result; // pair<number,var(about how many result)>
 void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_maxarray){
   long double mymoney = handmoney;
   int pos=0;
@@ -30,9 +31,6 @@ void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_max
   // 0 1 2 3
 
   for(int i=0;i<gamelimit;i++){ // 10^5
-    if(0 > mymoney)
-      return;
-
     switch (resultarray[i]) {
     /*
      * (mymoney*_bets[pos]/100.0) means "How many bet"
@@ -83,7 +81,17 @@ void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_max
     }
   }
 
-  nari[floor(mymoney)]++;
+  result[round(mymoney)+resultsize/2].second++;
+
+  return;
+}
+
+void makeResultTable(){ // result[resultsize/2] => 0
+  result.clear();
+  result.resize(resultsize,make_pair(0,0));
+  
+  for(int i=0;i<resultsize;i++)
+    result[i].first = i-resultsize/2;
 
   return;
 }
@@ -105,37 +113,37 @@ int main(){
     {2,4,6,10}
   };
 
-  cout<<"Bets:\n";
-  for(auto i:bets){
-    cout<<"  ";
-    for(auto j:i){
-      cout<<j<<" ";
-    }
-    cout<<"\n";
-  }
+  cout<<"bets: \n"<<bets<<"\n";
 
   ofstream resultfile("result.csv");
 
   for(auto &bet:bets){
+    makeResultTable();
+
     for(int c=0;c<10000;c++){
       makeResult();
       gameWithArray(bet,maxgetmoney,maxarray);
     }
     //clear nari
-    for(int i=nari.size()-1;;i--){
-      if(nari[i] == 0)
-        nari.pop_back();
+    for(int i=result.size()-1;;i--){ // from right
+      if(result[i].second == 0)
+        result.pop_back();
       else
         break;
     }
+    while(result[0].second == 0) // from left
+      result.pop_front();
 
-    for(auto i:nari){
-      resultfile<<i<<",";
-    }
+    resultfile<<bet<<"\n";
+
+    resultfile<<"num";
+    for(const auto &i:result)
+      resultfile<<","<<i.first;
     resultfile<<"\n";
-
-    nari.clear();
-    nari.resize(100000,0);
+    
+    resultfile<<"var";
+    for(const auto &i:result)
+      resultfile<<","<<i.second;
+    resultfile<<"\n\n";
   }
-
 }
