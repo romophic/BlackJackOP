@@ -32,9 +32,7 @@ void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_max
 
   for(int i=0;i<gamelimit;i++){ // 10^5
     switch (resultarray[i]) {
-    /*
-     * (mymoney*_bets[pos]/100.0) means "How many bet"
-     */
+    // (mymoney*_bets[pos]/100.0) means "How many bet"
     case gamestatus::WIN:
       mymoney += _bets[pos];
       upPos(pos);
@@ -104,14 +102,27 @@ int main(){
 
   long double maxgetmoney=0;
   vector<int> maxarray(4,0); //write by persent(%) ex(100 -> 100%)
-  vector<vector<int>> bets = {
-    {1,2,3,5},
-    {1,3,2,6},
-    {1,1,1,1},
-    {10,10,10,10},
-    {1,2,4,8},
-    {2,4,6,10}
-  };
+  vector<vector<int>> bets;
+
+  cout << "\
+{a,b,c,d}‚ð‹ó”’‹æØ‚è‚Å“ü—Í‚µ‚Ä‚­‚¾‚³‚¢\n\
+“ü—Í‚ÌI‚í‚è‚É‚Í,\"0 0 0 0\" ‚Æ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢\n\
+Ex)\n\
+1 1 1 1\n\
+1 2 3 4 \n\
+2 4 6 8 \n\
+1 2 6 10 \n\
+0 0 0 0 \n";
+
+  while (true) {
+    cout << ": ";
+    int a, b, c, d; cin >> a >> b >> c >> d;
+    if (a == b and b == c and c == d and a == 0) {
+      break;
+    } else {
+      bets.push_back(vector<int>{a,b,c,d});
+    }
+  }
 
   cout<<"bets: \n"<<bets<<"\n";
 
