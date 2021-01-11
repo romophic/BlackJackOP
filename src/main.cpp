@@ -79,7 +79,7 @@ void gameWithArray(vector<int> _bets,long double &_maxgetmoney,vector<int> &_max
     }
   }
 
-  result[round(mymoney)+resultsize/2].second++;
+  result[ceil(mymoney)+resultsize/2].second++;
 
   return;
 }
@@ -105,8 +105,8 @@ int main(){
   vector<vector<int>> bets;
 
   cout << "\
-{a,b,c,d}‚ð‹ó”’‹æØ‚è‚Å“ü—Í‚µ‚Ä‚­‚¾‚³‚¢\n\
-“ü—Í‚ÌI‚í‚è‚É‚Í,\"0 0 0 0\" ‚Æ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢\n\
+{a,b,c,d}ã‚’ç©ºç™½åŒºåˆ‡ã‚Šã§å…¥åŠ›ã—ã¦ãã ã•ã„\n\
+å…¥åŠ›ã®çµ‚ã‚ã‚Šã«ã¯,\"0 0 0 0\" ã¨å…¥åŠ›ã—ã¦ãã ã•ã„\n\
 Ex)\n\
 1 1 1 1\n\
 1 2 3 4 \n\
@@ -135,6 +135,7 @@ Ex)\n\
       makeResult();
       gameWithArray(bet,maxgetmoney,maxarray);
     }
+
     //clear nari
     for(int i=result.size()-1;;i--){ // from right
       if(result[i].second == 0)
